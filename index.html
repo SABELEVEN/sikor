@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIKOR — Menswear</title>
+<style>
+  :root{
+    --bg:#0a0a0a;--bg-2:#121212;--panel:#151515;
+    --line:#242424;--line-2:#343434;
+    --white:#f4f3f1;--grey:#8d8d89;--grey-2:#666662;
+    --f:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --gut:clamp(20px,5vw,80px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--f);background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;line-height:1.5}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  a{color:inherit;text-decoration:none}
+  img{display:block}
+  ::selection{background:#fff;color:#000}
+
+  .top{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;background:rgba(10,10,10,.82);backdrop-filter:blur(12px)}
+  .top-in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:70px;padding:0 var(--gut)}
+  .top-nav{display:flex;gap:24px;flex-wrap:wrap}
+  .top-nav button{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);transition:color .18s;white-space:nowrap}
+  .top-nav button:hover,.top-nav button.on{color:var(--white)}
+  .vk-link{display:inline-flex;align-items:center;color:var(--grey);transition:color .18s}
+  .vk-link:hover{color:#fff}
+  .brand{font-size:24px;font-weight:800;letter-spacing:.36em;text-transform:uppercase;padding-left:.36em;text-align:center;cursor:pointer}
+  .top-right{display:flex;gap:22px;justify-content:flex-end;align-items:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+  .top-right button:hover{color:#fff}
+  .top-right .cc{color:#fff}
+  @media(max-width:820px){.top-right{margin-right:0;gap:16px}}
+
+  .view{display:none}
+  .view.active{display:block;animation:fade .45s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  .hero{position:relative;min-height:calc(100vh - 71px);display:flex;flex-direction:column;justify-content:center;padding:0 var(--gut);overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.4;-webkit-mask:radial-gradient(120% 90% at 50% 40%,#000,transparent 78%);mask:radial-gradient(120% 90% at 50% 40%,#000,transparent 78%)}
+  .hero-glow{position:absolute;inset:0;z-index:0;background:radial-gradient(50% 55% at 50% 42%,#1e1e1e,transparent 70%)}
+  .hero-in{position:relative;z-index:1;text-align:center}
+  .hero h1{font-size:clamp(52px,15vw,220px);font-weight:800;line-height:.86;letter-spacing:.005em;text-transform:uppercase}
+  .hero .lead{max-width:520px;margin:30px auto 0;color:var(--grey);font-size:15px;line-height:1.7}
+  .hero .cta{margin-top:36px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;padding:15px 34px;font-weight:600;transition:all .2s;border:1px solid #fff}
+  .btn.solid{background:#fff;color:#000}
+  .btn.solid:hover{background:transparent;color:#fff}
+  .btn.line{color:#fff;border-color:var(--line-2)}
+  .btn.line:hover{border-color:#fff}
+  .btn.block{width:100%;text-align:center}
+  .hero .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:1;font-size:10px;letter-spacing:.26em;color:var(--grey-2);text-transform:uppercase}
+
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:clamp(40px,7vw,84px) var(--gut) 22px}
+  .sec-head h2{font-size:clamp(22px,3.4vw,36px);font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+  .sec-head .lnk{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);border-bottom:1px solid var(--line-2);padding-bottom:2px}
+  .sec-head .lnk:hover{color:#fff;border-color:#fff}
+  .rail{display:flex;gap:1px;overflow-x:auto;padding:0 var(--gut) 6px;scroll-snap-type:x mandatory;background:var(--line)}
+  .rail::-webkit-scrollbar{height:0}
+  .rail .rcard{flex:0 0 clamp(220px,26vw,320px);scroll-snap-align:start;background:var(--bg);cursor:pointer;padding-bottom:18px}
+  .rail .rcard:hover{background:var(--bg-2)}
+
+  .cat-top{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;padding:clamp(44px,7vw,90px) var(--gut) 24px;border-top:1px solid var(--line)}
+  .cat-top h2{font-size:clamp(24px,4vw,42px);font-weight:800;text-transform:uppercase}
+  .cat-top .sub{color:var(--grey);font-size:13px;margin-top:8px}
+  .cat-top .rc{font-size:12px;letter-spacing:.1em;color:var(--grey-2);text-transform:uppercase}
+  .filters{display:flex;flex-wrap:wrap;gap:24px 40px;padding:0 var(--gut) 26px}
+  .fg{display:flex;flex-direction:column;gap:10px}
+  .fg .fl{font-size:10px;letter-spacing:.22em;color:var(--grey-2);text-transform:uppercase}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:8px 15px;border:1px solid var(--line-2);color:var(--grey);transition:all .18s}
+  .chip:hover{border-color:#fff;color:#fff}
+  .chip.active{background:#fff;color:#000;border-color:#fff}
+  .chip.salec{border-color:#e9b872;color:#e9b872}
+  .chip.salec.active{background:#e9b872;color:#000;border-color:#e9b872}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
+  @media(max-width:1150px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--bg);cursor:pointer;transition:background .2s}
+  .card:hover{background:var(--bg-2)}
+  .thumb{aspect-ratio:4/5;position:relative;overflow:hidden;background:#1a1a1a}
+  .thumb .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey-2)}
+  .pimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .pimg.hov{opacity:0;z-index:2;transition:opacity .6s cubic-bezier(.2,.7,.2,1)}
+  .card:hover .pimg.hov{opacity:1}
+  .thumb .tag{position:absolute;top:16px;left:16px;z-index:4;font-size:9px;letter-spacing:.2em;text-transform:uppercase;background:#fff;color:#000;padding:5px 9px}
+  .thumb .tag.sale{background:#e9b872;color:#000;font-weight:700}
+  .thumb .num{position:absolute;top:14px;right:16px;z-index:4;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.1em;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .thumb .reveal{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-end;background:linear-gradient(0deg,rgba(0,0,0,.72),transparent);transform:translateY(101%);transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .card:hover .thumb .reveal,.rcard:hover .thumb .reveal{transform:none}
+  .thumb .reveal .add{font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(255,255,255,.6);padding:7px 12px;background:rgba(0,0,0,.35)}
+  .thumb .reveal .add:hover{background:#fff;color:#000;border-color:#fff}
+  .thumb .reveal .rsz{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+  .cb{padding:15px clamp(16px,2.5vw,24px) 20px;display:flex;flex-direction:column;gap:5px}
+  .cb .n{font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+  .cb .m{font-size:12px;color:var(--grey-2)}
+  .cb .p{font-size:13px;margin-top:2px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .po{text-decoration:line-through;color:var(--grey-2)}
+  .pn{font-size:1.2em;font-weight:700;color:#fff}
+  .pn.sale{color:#e9b872}
+  .empty{grid-column:1/-1;background:var(--bg);padding:90px;text-align:center;color:var(--grey-2)}
+
+  .pd{display:grid;grid-template-columns:1.15fr .85fr}
+  @media(max-width:900px){.pd{grid-template-columns:1fr}}
+  .pd-media{background:#151515;position:relative;min-height:72vh;overflow:hidden;border-right:1px solid var(--line)}
+  .pd-media .pmain{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .pd-media .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--grey)}
+  .pd-thumbs{position:absolute;bottom:16px;left:16px;z-index:3;display:flex;gap:8px}
+  .pd-thumbs button{width:54px;height:54px;border:1px solid rgba(255,255,255,.35);overflow:hidden;padding:0;background:#222}
+  .pd-thumbs button.on{border-color:#fff}
+  .pd-thumbs img{width:100%;height:100%;object-fit:cover}
+  .pd-info{padding:clamp(30px,5vw,74px) var(--gut);display:flex;flex-direction:column;gap:22px;max-width:560px}
+  .crumb{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2)}
+  .crumb button:hover{color:#fff}
+  .pd-info h1{font-size:clamp(26px,4vw,42px);font-weight:800;text-transform:uppercase;line-height:1.04}
+  .pd-price{font-size:18px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .pd-desc{color:var(--grey);font-size:15px;line-height:1.75;max-width:46ch}
+  .sel-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .sel-head .lab{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey-2)}
+  .sel-head .guide{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);border-bottom:1px solid var(--grey-2);padding-bottom:1px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opt{min-width:56px;padding:14px 14px;text-align:center;border:1px solid var(--line-2);font-size:13px;letter-spacing:.06em;transition:all .16s;text-transform:none}
+  .opt:hover:not(.off){border-color:#fff}
+  .opt.active{background:#fff;color:#000;border-color:#fff}
+  .opt.off{color:#4a4a48;cursor:not-allowed;text-decoration:line-through}
+  .note{font-size:12px;color:var(--grey);min-height:16px}
+  .pd-meta{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:11px}
+  .pd-meta .row{display:flex;gap:12px;font-size:13px;color:var(--grey)}
+  .pd-meta .row b{color:var(--white);font-weight:600;min-width:120px;text-transform:uppercase;font-size:11px;letter-spacing:.1em}
+
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .3s;z-index:80}
+  .overlay.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(400px,92vw);background:var(--bg-2);border-left:1px solid var(--line);z-index:90;transform:translateX(100%);transition:transform .34s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+  .drawer.open{transform:none}
+  .dh{display:flex;justify-content:space-between;align-items:center;padding:22px 26px;border-bottom:1px solid var(--line)}
+  .dh h3{font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+  .dh button{font-size:22px;color:var(--grey)}
+  .db{flex:1;overflow:auto;padding:6px 26px}
+  .ci{display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .ci .sw{width:64px;height:84px;flex:none;object-fit:cover;background:#222}
+  .ci .info{flex:1;font-size:13px;display:flex;flex-direction:column;gap:4px}
+  .ci .info .n{text-transform:uppercase;letter-spacing:.04em}
+  .ci .info .s{color:var(--grey-2)}
+  .ci .info .rm{margin-top:auto;align-self:flex-start;font-size:11px;color:var(--grey-2);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--line-2)}
+  .ci .info .rm:hover{color:#fff}
+  .df{padding:22px 26px;border-top:1px solid var(--line)}
+  .df .tot{display:flex;justify-content:space-between;font-size:14px;margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em}
+  .cempty{padding:60px 0;text-align:center;color:var(--grey-2);font-size:14px}
+
+  footer{border-top:1px solid var(--line);background:var(--bg-2)}
+  .fg2{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;padding:60px var(--gut) 36px}
+  @media(max-width:700px){.fg2{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.fg2{grid-template-columns:1fr}}
+  .fg2 h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#fff;margin-bottom:16px}
+  .fg2 a,.fg2 p{display:block;font-size:13px;color:var(--grey);margin-bottom:10px}
+  .fg2 a:hover{color:#fff}
+  .fbrand{font-size:30px;font-weight:800;letter-spacing:.3em;text-transform:uppercase}
+  .fbrand+p{margin-top:14px;max-width:240px}
+  .news{display:flex;border:1px solid var(--line-2);margin-top:8px;max-width:280px}
+  .news input{flex:1;background:none;border:none;color:#fff;padding:12px 14px;font-size:13px;outline:none}
+  .news button{background:#fff;color:#000;padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .fb{border-top:1px solid var(--line);padding:20px var(--gut);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-2)}
+
+  /* ---- About ---- */
+  .about{max-width:820px;margin:0 auto;padding:clamp(48px,8vw,110px) var(--gut) clamp(60px,9vw,120px)}
+  .about .crumb{margin-bottom:24px}
+  .about h1{font-size:clamp(30px,6vw,64px);font-weight:800;text-transform:uppercase;line-height:1;letter-spacing:.01em;margin-bottom:10px}
+  .about .hi{font-size:clamp(18px,2.6vw,26px);color:#fff;margin:26px 0 18px;font-weight:600}
+  .about p{color:var(--grey);font-size:16px;line-height:1.85;margin-bottom:16px;max-width:60ch}
+  .about .contact{border-top:1px solid var(--line);margin-top:34px;padding-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+  .about .contact .blk .l{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey-2);margin-bottom:8px}
+  .about .contact .blk .v{font-size:15px;color:#fff;line-height:1.6}
+  .about .contact .blk a{color:#fff;border-bottom:1px solid var(--line-2)}
+  .about .contact .blk a:hover{border-color:#fff}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <nav class="top-nav" id="topNav">
+      <button id="searchBtn">Каталог</button>
+      <button id="aboutBtn">О нас</button>
+      <button id="cartBtn">Корзина (<span class="cc" id="cc">0</span>)</button>
+    </nav>
+    <div class="brand" id="logo">SIKOR</div>
+    <div class="top-right">
+      <a class="vk-link" href="https://vk.ru/sikor_men" target="_blank" rel="noopener" aria-label="ВКонтакте SIKOR" title="Мы во ВКонтакте">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M13.162 18.994c-6.948 0-11.11-4.86-11.284-12.94h3.53c.12 5.933 2.782 8.462 4.846 8.978V6.054h3.322v5.09c2.038-.22 4.183-2.548 4.906-5.09h3.322c-.555 3.13-2.882 5.458-4.535 6.415 1.653.775 4.302 2.805 5.31 6.525h-3.656c-.786-2.446-2.75-4.34-5.347-4.6v4.6h-.4z"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="view active" id="homeView">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-glow"></div>
+      <div class="hero-in">
+        <h1>SIKOR</h1>
+        <p class="lead">Готовые образы для мужчин, которые ценят время. Выбирайте стиль без лишних деталей — без логотипов и принтов.</p>
+        <div class="cta">
+          <button class="btn solid" id="shopBtn">Смотреть каталог</button>
+        </div>
+      </div>
+      <div class="hint">↓ Прокрутите</div>
+    </div>
+
+    <div class="sec-head">
+      <h2>Скидки</h2>
+      <button class="lnk" id="allLink">Весь каталог →</button>
+    </div>
+    <div class="rail" id="rail"></div>
+
+    <div id="catalog">
+      <div class="cat-top">
+        <div><h2>Каталог</h2><div class="sub" id="catSub">Мужская одежда и аксессуары</div></div>
+        <div class="rc" id="rc"></div>
+      </div>
+      <div class="filters">
+        <div class="fg"><span class="fl">Категория</span><div class="chips" id="catChips"></div></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <footer>
+      <div class="fg2">
+        <div>
+          <div class="fbrand">SIKOR</div>
+          <p>Мужская одежда и аксессуары без лишних деталей. Сделано, чтобы носить каждый день.</p>
+          <div class="news"><input type="email" placeholder="Ваш e-mail" aria-label="e-mail"><button onclick="return false">OK</button></div>
+        </div>
+        <div>
+          <h4>Магазин</h4>
+          <div id="footCats"></div>
+        </div>
+        <div>
+          <h4>Сервис</h4>
+          <a href="#">Доставка и возврат</a>
+          <a href="#">Как ухаживать</a>
+          <a href="#">Контакты</a>
+        </div>
+      </div>
+      <div class="fb"><span>© 2026 SIKOR</span><span>Политика конфиденциальности</span></div>
+    </footer>
+  </section>
+
+  <section class="view" id="productView"></section>
+
+  <section class="view" id="aboutView">
+    <div class="about">
+      <div class="crumb"><button id="aboutBack">← На главную</button></div>
+      <h1>О нас</h1>
+      <div class="hi">Добро пожаловать в магазин SIKOR</div>
+      <p>У нас вы найдёте базовую мужскую одежду и обувь без принтов и логотипов, отличающуюся стилем и качеством.</p>
+      <p>Консультанты подберут для вас лучшее решение как для деловой, так и для повседневной одежды.</p>
+      <p>Ждём тебя в гости за новым образом!</p>
+      <div class="contact">
+        <div class="blk">
+          <div class="l">Адрес</div>
+          <div class="v">г. Челябинск, ТРК «Куба»,<br>ул. Цвиллинга 25, 2 этаж</div>
+        </div>
+        <div class="blk">
+          <div class="l">График работы</div>
+          <div class="v">Каждый день<br>с 10:00 до 22:00</div>
+        </div>
+        <div class="blk">
+          <div class="l">Телефон</div>
+          <div class="v"><a href="tel:+79823165446">+7 (982) 316-54-46</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Корзина">
+  <div class="dh"><h3>Корзина</h3><button id="closeCart" aria-label="Закрыть">×</button></div>
+  <div class="db" id="cartBody"></div>
+  <div class="df"><div class="tot"><span>Итого</span><span id="cartTotal">0 ₽</span></div><button class="btn solid block" onclick="return false">Оформить заказ</button></div>
+</aside>
+
+<script>
+/* =========================================================
+   КАТАЛОГ SIKOR
+   Чтобы добавить товар — добавьте объект в PRODUCTS.
+   Поля:
+     id       — уникальный номер
+     name     — название
+     category — категория (используется в фильтрах автоматически)
+     price    — число, ₽ (это НОВАЯ/актуальная цена)
+     oldPrice — старая цена до скидки (необязательно). Если указать и она
+                больше price — товар попадёт в блок "Скидки", старая цена
+                будет зачёркнута, новая — крупнее, появится плашка -XX%
+     tag      — плашка ("Новинка") или null
+     feat     — (не используется)
+     tone     — запасной цвет плитки, если фото не найдено
+     sizes    — массив размеров ["S","M","L"] или [] если без размера
+     colors   — массив цветов ["Хаки","Серый"] или [] если не нужен
+     images   — массив путей к фото ["images/x-1.jpg", ...] (1-е = главное)
+     desc     — короткое описание
+     details  — {"Состав":"...","Уход":"..."} (можно {})
+   Фото кладите в папку images/ рядом с этим файлом.
+   ========================================================= */
+const CATEGORY_ORDER=["Верхняя одежда","Костюмы","Свитшоты и худи","Свитеры","Поло","Трикотаж","Рубашки","Футболки","Брюки","Обувь","Аксессуары"];
+
+const PRODUCTS=[
+  {id:1,name:"Свитшот-поло",category:"Свитшоты и худи",price:3690,tag:"Новинка",feat:true,tone:"#3a4034",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Хаки","Серый"],
+   images:["images/svitshot-polo-1.jpg","images/svitshot-polo-2.jpg"],
+   desc:"Трендовый свитшот-поло — сочетание стиля и комфорта на прохладную погоду. Очень мягкий, бархатистый материал, приятный к телу. Базовая модель, которая отлично впишется в любой гардероб.",
+   details:{Крой:"Свободный",Уход:"Стирка 30°"}},
+
+  {id:6,name:"Текстурный свитшот-полузамок",category:"Свитшоты и худи",price:3690,tag:"Новинка",feat:true,tone:"#161616",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Синий"],
+   images:["images/svitshot-poluzamok-tekstura-1.jpg","images/svitshot-poluzamok-tekstura-2.jpg"],
+   desc:"Классический текстурный свитшот на полузамке — абсолютный тренд осенне-зимнего сезона. Материал из хлопка отлично «дышит» и способствует теплообмену.",
+   details:{Состав:"Хлопок",Производство:"Турция",Уход:"Стирка 30°"}},
+
+  {id:7,name:"Свитшот полузамок",category:"Свитшоты и худи",price:3990,tag:null,feat:true,tone:"#e8e0d2",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый"],
+   images:["images/svitshot-poluzamok-1.jpg","images/svitshot-poluzamok-2.jpg"],
+   desc:"Базовый свитшот на полузамке — отличная основа для образов. Невероятно мягкий и качественный материал, приятный к телу, создаёт ощущение комфорта. Классическая посадка сочетается и с классическими, и с повседневными образами.",
+   details:{Посадка:"Классическая",Производство:"Турция",Уход:"Стирка 30°"}},
+
+  {id:8,name:"Поло гладкое",category:"Поло",price:3690,tag:null,feat:true,tone:"#4a3128",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Коричневый"],
+   images:["images/polo-gladkoe-1.jpg","images/polo-gladkoe-2.jpg","images/polo-gladkoe-3.jpg"],
+   desc:"Поло классического кроя с дышащим вискозным составом. Воротник на полузамке с гладким ходом; текстура плетения добавляет изысканности и хорошо смотрится в повседневных и классических образах.",
+   details:{Состав:"Вискоза",Воротник:"Полузамок",Уход:"Стирка 30°"}},
+
+  {id:9,name:"Поло на пуговицах текстурное",category:"Поло",price:3690,tag:null,feat:false,tone:"#3f4a2c",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Белый","Зелёный","Коричневый"],
+   images:["images/polo-pugovicy-tekstura-1.jpg","images/polo-pugovicy-tekstura-2.jpg","images/polo-pugovicy-tekstura-3.jpg","images/polo-pugovicy-tekstura-4.jpg"],
+   desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт в носке обеспечивает состав из натурального хлопка. Классический воротник на пуговицах и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
+   details:{Состав:"Хлопок",Воротник:"На пуговицах",Уход:"Стирка 30°"}},
+
+  {id:10,name:"Рубашка line",category:"Рубашки",price:4390,tag:null,feat:true,tone:"#1c1c1c",
+   sizes:["S","M","L","XL","2XL"],colors:["Коричневый","Чёрный","Бежевый"],
+   images:["images/rubashka-line-1.jpg","images/rubashka-line-2.jpg","images/rubashka-line-3.jpg"],
+   desc:"Рубашка с трендовой полоской — отличное дополнение летних образов. Натуральный состав 100% хлопок и свободная посадка. Базовые пастельные оттенки легко впишутся в любой гардероб.",
+   details:{Состав:"100% хлопок",Посадка:"Свободная",Уход:"Стирка 30°"}},
+
+  {id:11,name:"Рубашка бежевая",category:"Рубашки",price:3490,tag:null,feat:false,tone:"#e2d3b8",
+   sizes:["S","M","L","XL","2XL"],colors:["Голубой","Бежевый"],
+   images:["images/rubashka-bezhevaya-1.jpg","images/rubashka-bezhevaya-2.jpg","images/rubashka-bezhevaya-3.jpg"],
+   desc:"Рубашка классической посадки с актуальной полоской в стиле old money. Качественный пошив и состав из льна и хлопка сделают её незаменимой для летних образов с шортами, брюками и джинсами.",
+   details:{Состав:"Лён / хлопок",Производство:"Турция",Посадка:"Классическая"}},
+
+  {id:12,name:"Рубашка boost",category:"Рубашки",price:3990,tag:null,feat:false,tone:"#6f5847",
+   sizes:["S","M","L","XL","2XL"],colors:["Белый","Коричневый","Чёрный"],
+   images:["images/rubashka-boost-1.jpg","images/rubashka-boost-2.jpg","images/rubashka-boost-3.jpg"],
+   desc:"Рубашка с длинным рукавом из 100% хлопка с текстурой льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
+   details:{Состав:"100% хлопок, текстура льна",Рукав:"Длинный",Уход:"Стирка 30°"}},
+
+  {id:13,name:"Рубашка OPEN",category:"Рубашки",price:4390,tag:null,feat:false,tone:"#43352a",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Коричневый"],
+   images:["images/rubashka-open-1.jpg","images/rubashka-open-2.jpg","images/rubashka-open-3.jpg"],
+   desc:"Рубашка прямого кроя с изысканным открытым воротником из льна и хлопка — отличный вариант для лета: дышащий, лёгкий материал. Хорошо сочетается с шортами и брюками.",
+   details:{Состав:"Лён / хлопок",Воротник:"Открытый",Крой:"Прямой"}},
+
+  {id:14,name:"Сабо чёрные",category:"Обувь",price:3990,tag:null,feat:false,tone:"#211a15",
+   sizes:["40","41","42","43","44","45","46"],colors:["Чёрный","Бежевый"],
+   images:["images/sabo-1.jpg","images/sabo-2.jpg","images/sabo-3.jpg"],
+   desc:"Трендовая летняя обувь — лёгкие сабо, которые идеально впишутся в образы. Отлично сочетаются с летними костюмами, рубашками и футболками. Подошва из пробкового материала, низ — из термопластичной резины, верх — натуральная замша.",
+   details:{Верх:"Замша",Подошва:"Пробка / термопластичная резина"}},
+
+  {id:15,name:"Лоферы",category:"Обувь",price:6690,tag:"Новинка",feat:true,tone:"#a58a6a",
+   sizes:["40","41","42","43","44","45","46"],colors:["Чёрно-белый","Чёрный","Бежевый"],
+   images:["images/lofery-1.jpg","images/lofery-2.jpg","images/lofery-3.jpg"],
+   desc:"Идеальная классическая обувь на лето. Лоферы из двухслойного материала: сверху — натуральная замша, внутри — натуральная кожа. За счёт натуральных материалов отлично дышат и комфортно сидят на ноге, при этом держат форму. Внутри ортопедическая стелька и мягкая прошитая подошва.",
+   details:{Верх:"Натуральная замша",Внутри:"Натуральная кожа",Стелька:"Ортопедическая"}},
+
+  {id:16,name:"Кеды натуральная кожа",category:"Обувь",price:6990,tag:null,feat:false,tone:"#e6e0d6",
+   sizes:["40","41","42","43","44","45","46"],colors:["Чёрный","Белый"],
+   images:["images/kedy-1.jpg","images/kedy-2.jpg","images/kedy-3.jpg"],
+   desc:"Классические кеды — идеальное дополнение как повседневных, так и вечерних образов. Выполнены из 100% натуральной кожи, что делает их комфортными и износостойкими.",
+   details:{Материал:"100% натуральная кожа"}},
+
+  {id:17,name:"Водолазка wool",category:"Свитеры",price:3390,tag:null,feat:false,tone:"#4a352a",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/vodolazka-wool-1.jpg","images/vodolazka-wool-2.jpg"],
+   desc:"Базовая водолазка для образов, с составом 90% хлопка и 10% шерсти — очень мягкая и приятная к телу. Отлично подходит как нижний слой для многослойных образов с куртками или рубашками, уместна и в утеплённых классических образах.",
+   details:{Состав:"90% хлопок, 10% шерсть",Уход:"Стирка 30°"}},
+
+  {id:18,name:"Свитер на полузамке",category:"Свитеры",price:3890,tag:null,feat:true,tone:"#2b2b28",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый","Белый","Синий","Коричневый","Серый"],
+   images:["images/sviter-poluzamok-1.jpg","images/sviter-poluzamok-2.jpg"],
+   desc:"Уютный свитер на полузамке — идеальный выбор для прохладных дней. Мягкая смесовая пряжа с хлопком дышит, не вызывает раздражения и отлично держит форму. Плотная фактурная вязка, стильный крой и металлическая молния добавляют акцента. Легко сочетается с джинсами, брюками и куртками.",
+   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Металлическая молния",Производство:"Турция"}},
+
+  {id:19,name:"Джемпер на молнии",category:"Свитеры",price:5990,tag:null,feat:false,tone:"#d9ccb2",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый"],
+   images:["images/dzhemper-molniya-1.jpg","images/dzhemper-molniya-2.jpg"],
+   desc:"Джемпер на молнии из трендового вязаного материала в мелкий рубчик, что визуально вытягивает и стройнит. Премиальный состав 90% хлопка и 10% шерсти и качественная фурнитура делают его комфортным в носке и износостойким.",
+   details:{Состав:"90% хлопок, 10% шерсть",Застёжка:"Молния",Уход:"Стирка 30°"}},
+
+  {id:20,name:"Пуховик CRUSH",category:"Верхняя одежда",price:7890,tag:"Новинка",feat:true,tone:"#3a3a38",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Серый"],
+   images:["images/puhovik-crush-1.jpg","images/puhovik-crush-2.jpg","images/puhovik-crush-3.jpg"],
+   desc:"Куртка с интересным дизайном прошивки — базовый, но акцентный пуховик, который привлекает внимание. Утеплённая, выполнена из качественного матового материала с «жатым» эффектом.",
+   details:{Материал:"Матовый, «жатый» эффект",Утеплитель:"Да",Производство:"Турция"}},
+
+  {id:21,name:"Джинсовка голубая",category:"Верхняя одежда",price:4890,tag:null,feat:true,tone:"#a9bccb",
+   sizes:["S","M","L","XL","2XL"],colors:["Серый","Голубой","Чёрный"],
+   images:["images/dzhinsovka-goluboy-1.jpg","images/dzhinsovka-goluboy-2.jpg","images/dzhinsovka-goluboy-3.jpg"],
+   desc:"Джинсовая рубашка-куртка из плотного хлопка, устойчивого к износу и хорошо держащего форму. Оснащена металлической фурнитурой. Отличная посадка и актуальный крой легко сочетаются во многих образах.",
+   details:{Состав:"Плотный хлопок (деним)",Фурнитура:"Металлическая",Производство:"Турция"}},
+
+  {id:22,name:"Джинсовка чёрная",category:"Верхняя одежда",price:4890,tag:null,feat:false,tone:"#161616",
+   sizes:["S","M","L","XL","2XL"],colors:["Серый","Чёрный","Тёмно-серый"],
+   images:["images/dzhinsovka-black-1.jpg","images/dzhinsovka-black-2.jpg","images/dzhinsovka-black-3.jpg","images/dzhinsovka-black-4.jpg"],
+   desc:"Джинсовая рубашка-куртка из плотного хлопка, устойчивого к износу и хорошо держащего форму. Оснащена металлической фурнитурой. Отличная посадка и актуальный крой легко сочетаются во многих образах.",
+   details:{Состав:"Плотный хлопок (деним)",Фурнитура:"Металлическая",Производство:"Турция"}},
+
+  {id:23,name:"Костюм LOFT",category:"Костюмы",price:5690,tag:"Новинка",feat:true,tone:"#8f9175",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Серый","Коричневый","Зелёный"],
+   images:["images/kostyum-loft-green-1.jpg","images/kostyum-loft-green-2.jpg","images/kostyum-loft-green-3.jpg","images/kostyum-loft-green-4.jpg","images/kostyum-loft-beige-1.jpg","images/kostyum-loft-beige-2.jpg","images/kostyum-loft-beige-3.jpg"],
+   desc:"Базовый летний костюм из хлопка. Комплект состоит из oversize-футболки с трендовым необработанным краем и шорт свободного кроя.",
+   details:{Состав:"Хлопок",Комплект:"Футболка oversize + шорты",Край:"Необработанный"}},
+
+  {id:24,name:"Костюм SUMMER",category:"Костюмы",price:5290,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Серый","Коричневый","Чёрный"],
+   images:["images/kostyum-summer-1.jpg","images/kostyum-summer-2.jpg","images/kostyum-summer-3.jpg"],
+   desc:"Базовый летний костюм из 100% хлопка. Комплект состоит из oversize-футболки с необработанным краем по низу и шорт свободного кроя с карманами на замках.",
+   details:{Состав:"100% хлопок",Комплект:"Футболка oversize + шорты",Карманы:"На замках"}},
+
+  {id:25,name:"Костюм классический",category:"Костюмы",price:9990,tag:"Premium",feat:true,tone:"#121212",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый"],
+   images:["images/kostyum-klassicheskiy-1.jpg","images/kostyum-klassicheskiy-2.jpg","images/kostyum-klassicheskiy-3.jpg","images/kostyum-klassicheskiy-4.jpg"],
+   desc:"Классический костюм с пиджаком из premium турецкого льна. Комплект: пиджак классической, слегка свободной посадки и брюки с заужением к низу. Лёгкий материал отлично дышит — идеально для мероприятий в жаркое время года.",
+   details:{Состав:"Лён premium",Комплект:"Пиджак + брюки",Производство:"Турция"}},
+
+  {id:26,name:"Брюки ease",category:"Брюки",price:3990,tag:null,feat:false,tone:"#6f5847",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Коричневый","Чёрный"],
+   images:["images/bryuki-ease-1.jpg","images/bryuki-ease-2.jpg","images/bryuki-ease-3.jpg"],
+   desc:"Брюки прямого кроя, слегка заужены к низу, из лиоцелла, вискозы и льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести рубашку из идентичного материала и сочетать как костюм.",
+   details:{Состав:"Лиоцелл / вискоза / лён",Крой:"Прямой, заужен к низу"}},
+
+  {id:27,name:"Брюки TONE",category:"Брюки",price:4190,tag:null,feat:false,tone:"#cfc4a6",
+   sizes:["S","M","L","XL","2XL"],colors:["Белый","Бежевый","Коричневый","Чёрный"],
+   images:["images/bryuki-tone-1.jpg","images/bryuki-tone-2.jpg","images/bryuki-tone-3.jpg"],
+   desc:"Брюки прямого кроя из целлюлозы эвкалиптового дерева — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести рубашку из идентичного материала и сочетать как костюм.",
+   details:{Состав:"Целлюлоза (эвкалипт)",Крой:"Прямой"}},
+
+  {id:28,name:"Брюки NYLON",category:"Брюки",price:4290,tag:null,feat:false,tone:"#6a5c4c",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый","Коричневый"],
+   images:["images/bryuki-nylon-1.jpg","images/bryuki-nylon-2.jpg","images/bryuki-nylon-3.jpg"],
+   desc:"Базовая модель полуклассических брюк из очень лёгкого материала с бархатным эффектом. Свободно сидят по фигуре, не облегают. Легко сочетаются с футболками, рубашками и поло.",
+   details:{Крой:"Полуклассический, свободный",Материал:"Лёгкий, бархатный эффект"}},
+
+  {id:2,name:"Сумка Portf.",category:"Аксессуары",price:3190,tag:null,feat:true,tone:"#171717",
+   sizes:[],colors:[],
+   images:["images/sumka-portf-1.jpg","images/sumka-portf-2.jpg","images/sumka-portf-3.jpg"],
+   desc:"Вместительная сумка в спокойных тонах — сдержанно и элегантно. Мягкий материал, удобная форма. Широкий регулируемый ремень удобно носится на плече или наискосок. Клапан на магнитной застёжке и молнии надёжно защищает содержимое. Поместится телефон, кошелёк, документы и мелочи.",
+   details:{Материал:"Экокожа",Ремень:"Регулируется",Застёжка:"Магнит / молния"}},
+
+  {id:3,name:"Сумка с монетницей",category:"Аксессуары",price:2590,tag:null,feat:true,tone:"#d8d2c6",
+   sizes:[],colors:[],
+   images:["images/sumka-monetnica-1.jpg","images/sumka-monetnica-2.jpg"],
+   desc:"Сумка из экокожи с отделением-монетницей на карабине. Основная сумка на молнии — вместительная, но компактная. Монетница крепится к ремню отдельно: удобно для мелочи, наушников или ключей. Ремень регулируется по длине.",
+   details:{Материал:"Экокожа",Ремень:"Регулируется",Комплект:"Сумка + монетница"}},
+
+  {id:4,name:"Очки солнцезащитные",category:"Аксессуары",price:1990,tag:null,feat:true,tone:"#6b5a4f",
+   sizes:[],colors:[],
+   images:["images/ochki-sun-1.jpg","images/ochki-sun-2.jpg","images/ochki-sun-3.jpg","images/ochki-sun-4.jpg"],
+   desc:"Имиджевые очки с акцентной перемычкой на переносице. Брутальная модель с тонированными линзами, которая отлично впишется в образы и повседневную жизнь. На дужках — небольшие эстетичные детали.",
+   details:{Тип:"Солнцезащитные",Оправа:"Безободковая",Линзы:"Тонированные"}},
+
+  {id:5,name:"Очки имиджевые",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#c9c7c2",
+   sizes:[],colors:[],
+   images:["images/ochki-image-1.jpg","images/ochki-image-2.jpg"],
+   desc:"Имиджевые очки с акцентной перемычкой на переносице. Брутальная модель с прозрачными линзами, которая отлично впишется в образы и повседневную жизнь. На дужках — небольшие эстетичные детали.",
+   details:{Тип:"Имиджевые",Оправа:"Металл",Линзы:"Прозрачные"}},
+
+  {id:29,name:"Полузамок бежевый",category:"Свитшоты и худи",price:990,oldPrice:3590,tag:null,feat:false,tone:"#d8cbb0",
+   sizes:["S","XL"],colors:["Чёрный","Бежевый"],
+   images:["images/poluzamok-bezhevyy-1.jpg","images/poluzamok-bezhevyy-2.jpg"],
+   desc:"Самый трендовый джемпер на полузамке из мягкого, в меру тонкого материала — не просвечивает! Отлично подходит к брюкам и джинсам как для повседневной носки, так и для мероприятий.",
+   details:{Застёжка:"Полузамок",Производство:"Турция",Уход:"Стирка 30°"}},
+
+  {id:30,name:"Свитер крупной вязки серый",category:"Свитеры",price:2290,oldPrice:3690,tag:null,feat:false,tone:"#3a3a34",
+   sizes:["XL","2XL"],colors:["Чёрный","Бежевый","Кофейный"],
+   images:["images/sviter-krupnaya-vyazka-1.jpg","images/sviter-krupnaya-vyazka-2.jpg"],
+   desc:"Базовый свитер крупной вязки из мягкого, очень приятного к телу материала. Отлично держит форму, а аккуратный воротник и приспущенное плечо придадут актуальности образам.",
+   details:{Вязка:"Крупная",Плечо:"Приспущенное",Производство:"Турция"}},
+
+  {id:31,name:"Пуховик натуральный пух",category:"Верхняя одежда",price:1490,oldPrice:8890,tag:null,feat:false,tone:"#111111",
+   sizes:["M","2XL"],colors:[],
+   images:["images/puhovik-natural-1.jpg","images/puhovik-natural-2.jpg"],
+   desc:"Базовая куртка на прохладное время года на натуральном пуху. Качественные материалы, удобна в носке — базовая модель, которая легко сочетается с любым гардеробом.",
+   details:{Утеплитель:"Натуральный пух"}},
+
+  {id:32,name:"Бомбер на пуху",category:"Верхняя одежда",price:2990,oldPrice:6990,tag:null,feat:false,tone:"#7d7259",
+   sizes:["L","2XL"],colors:["Чёрный","Хаки"],
+   images:["images/bomber-puh-1.jpg","images/bomber-puh-2.jpg"],
+   desc:"Тонкий, но невероятно тёплый бомбер с натуральным пухом — идеальное сочетание лёгкости и уюта. Высокая теплоизоляция пуха сохраняет тепло даже в холод, не сковывая движений. Пух лёгкий, воздухопроницаемый и отлично держит форму.",
+   details:{Утеплитель:"Натуральный пух",Крой:"Бомбер"}},
+
+  {id:33,name:"Поло с длинным рукавом",category:"Поло",price:2890,oldPrice:3890,tag:null,feat:false,tone:"#33352b",
+   sizes:["S","XL","2XL"],colors:["Чёрный","Серый","Зелёный","Белый"],
+   images:["images/polo-dlinnyy-rukav-1.jpg","images/polo-dlinnyy-rukav-2.jpg"],
+   desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт в носке обеспечивает состав из натурального хлопка. Трендовый открытый воротник без замка и пуговиц и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
+   details:{Состав:"Хлопок",Воротник:"Открытый, без застёжки",Производство:"Турция"}}
+];
+
+let activeCat="Все";
+const cart=[];
+const rub=n=>n.toLocaleString("ru-RU")+" ₽";
+const uid=(p,size,color)=>p.id+"|"+(size||"")+"|"+(color||"");
+const hasSale=p=>p.oldPrice&&p.oldPrice>p.price;
+function priceHtml(p){
+  if(hasSale(p))return '<span class="po">'+rub(p.oldPrice)+'</span><span class="pn sale">'+rub(p.price)+'</span>';
+  return rub(p.price);
+}
+
+/* ---- categories from products ---- */
+function catList(){
+  const present=CATEGORY_ORDER.filter(c=>PRODUCTS.some(p=>p.category===c));
+  PRODUCTS.forEach(p=>{if(!present.includes(p.category))present.push(p.category);});
+  const sale=PRODUCTS.some(hasSale)?["Скидки"]:[];
+  return ["Все",...sale,...present];
+}
+
+const topNav=document.getElementById("topNav");
+const catChips=document.getElementById("catChips");
+const footCats=document.getElementById("footCats");
+function buildCats(){
+  const cats=catList();
+  catChips.innerHTML="";footCats.innerHTML="";
+  cats.forEach(c=>{
+    const cb=document.createElement("button");
+    cb.className="chip"+(c==="Скидки"?" salec":"")+(c===activeCat?" active":"");cb.textContent=c;cb.dataset.cat=c;
+    cb.onclick=()=>selectCat(c,false);
+    catChips.appendChild(cb);
+
+    if(c!=="Все"){
+      const fa=document.createElement("a");fa.href="#";fa.textContent=c;fa.dataset.cat=c;
+      fa.onclick=(e)=>{e.preventDefault();selectCat(c,true);};
+      footCats.appendChild(fa);
+    }
+  });
+}
+function selectCat(c,scroll){
+  activeCat=c;showHome();
+  [...topNav.children].forEach(b=>b.classList.toggle("on",b.dataset.cat===c));
+  [...catChips.children].forEach(b=>b.classList.toggle("active",b.dataset.cat===c));
+  renderGrid();
+  if(scroll)document.getElementById("catalog").scrollIntoView({behavior:"smooth"});
+}
+
+/* ---- shared card ---- */
+function imgTag(p,i,cls){
+  const src=p.images&&p.images[i]?p.images[i]:"";
+  if(!src)return "";
+  return '<img class="'+cls+'" src="'+src+'" alt="'+p.name+'" loading="lazy" onerror="this.style.display=\'none\'">';
+}
+function thumbHtml(p,index){
+  const hasImg=p.images&&p.images.length;
+  const main=hasImg?imgTag(p,0,"pimg"):"";
+  const hov=hasImg&&p.images[1]?imgTag(p,1,"pimg hov"):"";
+  const rlabel=p.sizes&&p.sizes.length?p.sizes.slice(0,4).join(" / "):(p.colors&&p.colors.length?p.colors.slice(0,3).join(" / "):"Подробнее");
+  return '<div class="thumb" style="background:'+p.tone+'">'+
+      '<div class="ph">'+p.name+'</div>'+
+      main+hov+
+      (hasSale(p)?'<span class="tag sale">-'+Math.round((1-p.price/p.oldPrice)*100)+'%</span>':(p.tag?'<span class="tag">'+p.tag+'</span>':''))+
+      (index!=null?'<span class="num">'+String(index+1).padStart(2,"0")+'</span>':'')+
+      '<div class="reveal"><span class="rsz">'+rlabel+'</span><button class="add">В корзину</button></div>'+
+    '</div>'+
+    '<div class="cb"><span class="n">'+p.name+'</span><span class="m">'+p.category+'</span><span class="p">'+priceHtml(p)+'</span></div>';
+}
+
+const rail=document.getElementById("rail");
+function renderRail(){
+  rail.innerHTML="";
+  const sale=PRODUCTS.filter(hasSale);
+  sale.forEach(p=>{
+    const c=document.createElement("article");c.className="rcard";c.onclick=()=>openProduct(p.id);
+    c.innerHTML=thumbHtml(p,null);
+    c.querySelector(".add").onclick=(e)=>{e.stopPropagation();quickAdd(p);};
+    rail.appendChild(c);
+  });
+  document.querySelector(".sec-head").style.display=sale.length?"":"none";
+  rail.style.display=sale.length?"":"none";
+}
+
+const grid=document.getElementById("grid"),rc=document.getElementById("rc");
+function filtered(){
+  if(activeCat==="Скидки")return PRODUCTS.filter(hasSale);
+  return PRODUCTS.filter(p=>activeCat==="Все"||p.category===activeCat);
+}
+function renderGrid(){
+  const items=filtered();
+  rc.textContent=items.length+(items.length%10===1&&items.length%100!==11?" товар":" товаров");
+  grid.innerHTML="";
+  if(!items.length){grid.innerHTML='<div class="empty">В этой категории пока нет товаров.</div>';return;}
+  items.forEach((p,i)=>{
+    const card=document.createElement("article");card.className="card";card.onclick=()=>openProduct(p.id);
+    card.innerHTML=thumbHtml(p,i);
+    card.querySelector(".add").onclick=(e)=>{e.stopPropagation();quickAdd(p);};
+    grid.appendChild(card);
+  });
+}
+function quickAdd(p){addToCart(p,(p.sizes&&p.sizes[0])||null,(p.colors&&p.colors[0])||null);}
+
+/* ---- product page ---- */
+const productView=document.getElementById("productView"),homeView=document.getElementById("homeView");
+let selSize=null,selColor=null;
+function openProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  selSize=(p.sizes&&p.sizes.length)?null:"__none__";
+  selColor=(p.colors&&p.colors.length)?null:"__none__";
+  const hasImg=p.images&&p.images.length;
+  const mainImg=hasImg?'<img class="pmain" src="'+p.images[0]+'" alt="'+p.name+'" onerror="this.style.display=\'none\'">':"";
+  const thumbs=hasImg&&p.images.length>1?'<div class="pd-thumbs" id="pdThumbs">'+p.images.map((src,i)=>'<button class="'+(i===0?"on":"")+'" data-i="'+i+'"><img src="'+src+'" alt="" onerror="this.parentElement.style.display=\'none\'"></button>').join("")+'</div>':"";
+
+  let sizeBlock="";
+  if(p.sizes&&p.sizes.length){
+    sizeBlock='<div><div class="sel-head"><span class="lab">Размер</span><span class="guide">Таблица размеров</span></div>'+
+      '<div class="opts" id="sizes">'+p.sizes.map(s=>'<button class="opt" data-s="'+s+'">'+s+'</button>').join("")+'</div></div>';
+  }
+  let colorBlock="";
+  if(p.colors&&p.colors.length){
+    colorBlock='<div><div class="sel-head"><span class="lab">Цвет</span></div>'+
+      '<div class="opts" id="colors">'+p.colors.map(c=>'<button class="opt" data-c="'+c+'">'+c+'</button>').join("")+'</div></div>';
+  }
+  const detailsHtml=Object.entries(p.details||{}).map(([k,v])=>'<div class="row"><b>'+k+'</b><span>'+v+'</span></div>').join("");
+
+  productView.innerHTML=
+    '<div class="pd">'+
+      '<div class="pd-media" style="background:'+p.tone+'"><div class="ph">SIKOR — '+p.name+'</div>'+mainImg+thumbs+'</div>'+
+      '<div class="pd-info">'+
+        '<div class="crumb"><button id="backBtn">← Каталог</button> / '+p.category+'</div>'+
+        '<h1>'+p.name+'</h1>'+
+        '<div class="pd-price">'+priceHtml(p)+'</div>'+
+        '<p class="pd-desc">'+p.desc+'</p>'+
+        colorBlock+sizeBlock+
+        '<button class="btn solid block" id="addBtn">Добавить в корзину</button>'+
+        '<div class="note" id="note"></div>'+
+        (detailsHtml?'<div class="pd-meta">'+detailsHtml+'</div>':'')+
+      '</div>'+
+    '</div>';
+
+  // gallery switching
+  if(hasImg&&p.images.length>1){
+    const pmain=productView.querySelector(".pmain");
+    productView.querySelectorAll("#pdThumbs button").forEach(b=>{
+      b.onclick=()=>{const i=+b.dataset.i;pmain.src=p.images[i];pmain.style.display="";productView.querySelectorAll("#pdThumbs button").forEach(x=>x.classList.remove("on"));b.classList.add("on");};
+    });
+  }
+  // colors
+  const colorsEl=productView.querySelector("#colors");
+  if(colorsEl)colorsEl.querySelectorAll(".opt").forEach(btn=>{btn.onclick=()=>{selColor=btn.dataset.c;colorsEl.querySelectorAll(".opt").forEach(b=>b.classList.remove("active"));btn.classList.add("active");updateNote(p);};});
+  // sizes
+  const sizesEl=productView.querySelector("#sizes");
+  if(sizesEl)sizesEl.querySelectorAll(".opt").forEach(btn=>{btn.onclick=()=>{selSize=btn.dataset.s;sizesEl.querySelectorAll(".opt").forEach(b=>b.classList.remove("active"));btn.classList.add("active");updateNote(p);};});
+
+  productView.querySelector("#backBtn").onclick=showHome;
+  productView.querySelector("#addBtn").onclick=()=>{
+    if(selColor===null){document.getElementById("note").textContent="Выберите цвет";return;}
+    if(selSize===null){document.getElementById("note").textContent="Выберите размер";return;}
+    addToCart(p,selSize==="__none__"?null:selSize,selColor==="__none__"?null:selColor);
+    document.getElementById("note").textContent="Добавлено в корзину ✓";
+  };
+  updateNote(p);
+  homeView.classList.remove("active");aboutView.classList.remove("active");productView.classList.add("active");window.scrollTo(0,0);
+}
+function updateNote(p){
+  const n=document.getElementById("note");if(!n)return;
+  const need=[];
+  if(selColor===null)need.push("цвет");
+  if(selSize===null)need.push("размер");
+  n.textContent=need.length?("Выберите "+need.join(" и ")):"";
+}
+const aboutView=document.getElementById("aboutView");
+function showHome(){productView.classList.remove("active");aboutView.classList.remove("active");homeView.classList.add("active");}
+function showAbout(){homeView.classList.remove("active");productView.classList.remove("active");aboutView.classList.add("active");window.scrollTo(0,0);}
+document.getElementById("logo").onclick=()=>{selectCat("Все",false);window.scrollTo({top:0,behavior:"smooth"});};
+document.getElementById("shopBtn").onclick=()=>document.getElementById("catalog").scrollIntoView({behavior:"smooth"});
+document.getElementById("searchBtn").onclick=()=>{showHome();document.getElementById("catalog").scrollIntoView({behavior:"smooth"});};
+document.getElementById("aboutBtn").onclick=showAbout;
+document.getElementById("aboutBack").onclick=()=>{showHome();window.scrollTo({top:0,behavior:"smooth"});};
+document.getElementById("allLink").onclick=()=>selectCat("Все",true);
+
+/* ---- cart ---- */
+const drawer=document.getElementById("drawer"),overlay=document.getElementById("overlay"),cartBody=document.getElementById("cartBody"),cartTotal=document.getElementById("cartTotal"),cc=document.getElementById("cc");
+function addToCart(p,size,color){
+  const key=uid(p,size,color);
+  const ex=cart.find(i=>i.key===key);
+  if(ex)ex.qty++;else cart.push({key,id:p.id,name:p.name,price:p.price,img:(p.images&&p.images[0])||"",tone:p.tone,size,color,qty:1});
+  renderCart();openCart();
+}
+function removeFromCart(i){cart.splice(i,1);renderCart();}
+function renderCart(){
+  cc.textContent=cart.reduce((s,i)=>s+i.qty,0);
+  cartTotal.textContent=rub(cart.reduce((s,i)=>s+i.price*i.qty,0));
+  if(!cart.length){cartBody.innerHTML='<div class="cempty">Корзина пуста</div>';return;}
+  cartBody.innerHTML="";
+  cart.forEach((i,idx)=>{
+    const opts=[i.color,i.size&&("Размер "+i.size)].filter(Boolean).join(" · ");
+    const el=document.createElement("div");el.className="ci";
+    el.innerHTML=(i.img?'<img class="sw" src="'+i.img+'" alt="" onerror="this.style.background=\''+i.tone+'\';this.removeAttribute(\'src\')">':'<div class="sw" style="background:'+i.tone+'"></div>')+
+      '<div class="info"><span class="n">'+i.name+'</span>'+(opts?'<span class="s">'+opts+'</span>':'')+'<span class="s">'+i.qty+' шт. · '+rub(i.price*i.qty)+'</span><button class="rm" data-i="'+idx+'">Удалить</button></div>';
+    cartBody.appendChild(el);
+  });
+  cartBody.querySelectorAll(".rm").forEach(b=>b.onclick=()=>removeFromCart(+b.dataset.i));
+}
+function openCart(){drawer.classList.add("open");overlay.classList.add("open");}
+function closeCart(){drawer.classList.remove("open");overlay.classList.remove("open");}
+document.getElementById("cartBtn").onclick=openCart;
+document.getElementById("closeCart").onclick=closeCart;
+overlay.onclick=closeCart;
+
+/* ---- init ---- */
+buildCats();renderRail();renderGrid();renderCart();
+</script>
+</body>
+</html>
