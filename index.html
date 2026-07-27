@@ -32,6 +32,14 @@
   .top-right button:hover{color:#fff}
   .top-right .cc{color:#fff}
   @media(max-width:820px){.top-right{margin-right:0;gap:16px}}
+  @media(max-width:640px){
+    .top-in{grid-template-columns:1fr auto;grid-template-areas:"brand vk" "nav nav";height:auto;padding-top:12px;padding-bottom:10px;row-gap:10px;align-items:center}
+    .brand{grid-area:brand;justify-self:start;text-align:left;padding-left:0}
+    .top-right{grid-area:vk;justify-self:end}
+    #topNav{grid-area:nav;display:flex;flex-wrap:nowrap;justify-content:space-between;gap:12px;width:100%;overflow-x:auto}
+    .top-nav{gap:12px}
+    .top-nav button{font-size:11px;letter-spacing:.06em;white-space:nowrap}
+  }
 
   .view{display:none}
   .view.active{display:block;animation:fade .45s ease}
@@ -40,7 +48,10 @@
   .hero{position:relative;min-height:calc(100vh - 71px);display:flex;flex-direction:column;justify-content:center;padding:0 var(--gut);overflow:hidden;border-bottom:1px solid var(--line)}
   .hero-bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.4;-webkit-mask:radial-gradient(120% 90% at 50% 40%,#000,transparent 78%);mask:radial-gradient(120% 90% at 50% 40%,#000,transparent 78%)}
   .hero-glow{position:absolute;inset:0;z-index:0;background:radial-gradient(50% 55% at 50% 42%,#1e1e1e,transparent 70%)}
-  .hero-in{position:relative;z-index:1;text-align:center}
+  .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:none}
+  .hero-veil{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(10,10,10,.45),rgba(10,10,10,.7));display:none}
+  .hero.has-video .hero-video,.hero.has-video .hero-veil{display:block}
+  .hero-in{position:relative;z-index:3;text-align:center}
   .hero h1{font-size:clamp(52px,15vw,220px);font-weight:800;line-height:.86;letter-spacing:.005em;text-transform:uppercase}
   .hero .lead{max-width:520px;margin:30px auto 0;color:var(--grey);font-size:15px;line-height:1.7}
   .hero .cta{margin-top:36px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
@@ -50,7 +61,7 @@
   .btn.line{color:#fff;border-color:var(--line-2)}
   .btn.line:hover{border-color:#fff}
   .btn.block{width:100%;text-align:center}
-  .hero .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:1;font-size:10px;letter-spacing:.26em;color:var(--grey-2);text-transform:uppercase}
+  .hero .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;font-size:10px;letter-spacing:.26em;color:var(--grey-2);text-transform:uppercase}
 
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:clamp(40px,7vw,84px) var(--gut) 22px}
   .sec-head h2{font-size:clamp(22px,3.4vw,36px);font-weight:800;text-transform:uppercase;letter-spacing:.01em}
@@ -65,10 +76,11 @@
   .cat-top h2{font-size:clamp(24px,4vw,42px);font-weight:800;text-transform:uppercase}
   .cat-top .sub{color:var(--grey);font-size:13px;margin-top:8px}
   .cat-top .rc{font-size:12px;letter-spacing:.1em;color:var(--grey-2);text-transform:uppercase}
-  .filters{display:flex;flex-wrap:wrap;gap:24px 40px;padding:0 var(--gut) 26px}
-  .fg{display:flex;flex-direction:column;gap:10px}
-  .fg .fl{font-size:10px;letter-spacing:.22em;color:var(--grey-2);text-transform:uppercase}
-  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .filters{position:sticky;top:var(--topbar,70px);z-index:40;display:flex;align-items:center;padding:12px var(--gut);background:var(--bg);border-bottom:1px solid var(--line)}
+  .fg{display:flex;flex-direction:row;align-items:center;gap:14px;width:100%;min-width:0}
+  .fg .fl{font-size:10px;letter-spacing:.22em;color:var(--grey-2);text-transform:uppercase;flex:none}
+  .chips{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
   .chip{font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:8px 15px;border:1px solid var(--line-2);color:var(--grey);transition:all .18s}
   .chip:hover{border-color:#fff;color:#fff}
   .chip.active{background:#fff;color:#000;border-color:#fff}
@@ -111,6 +123,8 @@
   .pd-thumbs button{width:54px;height:54px;border:1px solid rgba(255,255,255,.35);overflow:hidden;padding:0;background:#222}
   .pd-thumbs button.on{border-color:#fff}
   .pd-thumbs img{width:100%;height:100%;object-fit:cover}
+  .pd-back{position:absolute;top:16px;left:16px;z-index:5;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:background .2s}
+  .pd-back:hover{background:#000}
   .pd-info{padding:clamp(30px,5vw,74px) var(--gut);display:flex;flex-direction:column;gap:22px;max-width:560px}
   .crumb{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2)}
   .crumb button:hover{color:#fff}
@@ -199,6 +213,10 @@
     <div class="hero">
       <div class="hero-bg"></div>
       <div class="hero-glow"></div>
+      <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="images/hero-poster.jpg">
+        <source src="hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-veil"></div>
       <div class="hero-in">
         <h1>SIKOR</h1>
         <p class="lead">Готовые образы для мужчин, которые ценят время. Выбирайте стиль без лишних деталей — без логотипов и принтов.</p>
@@ -326,20 +344,20 @@ const PRODUCTS=[
    desc:"Базовый свитшот на полузамке — отличная основа для образов. Невероятно мягкий и качественный материал, приятный к телу, создаёт ощущение комфорта. Классическая посадка сочетается и с классическими, и с повседневными образами.",
    details:{Посадка:"Классическая",Производство:"Турция",Уход:"Стирка 30°"}},
 
-  {id:8,name:"Поло гладкое",category:"Поло",price:3690,tag:null,feat:true,tone:"#4a3128",
-   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Коричневый"],
+  {id:8,name:"Поло гладкое коричневое",category:"Поло",price:3690,tag:null,feat:true,tone:"#4a3128",
+   sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/polo-gladkoe-1.jpg","images/polo-gladkoe-2.jpg","images/polo-gladkoe-3.jpg"],
    desc:"Поло классического кроя с дышащим вискозным составом. Воротник на полузамке с гладким ходом; текстура плетения добавляет изысканности и хорошо смотрится в повседневных и классических образах.",
    details:{Состав:"Вискоза",Воротник:"Полузамок",Уход:"Стирка 30°"}},
 
-  {id:9,name:"Поло на пуговицах текстурное",category:"Поло",price:3690,tag:null,feat:false,tone:"#3f4a2c",
-   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Белый","Зелёный","Коричневый"],
-   images:["images/polo-pugovicy-tekstura-1.jpg","images/polo-pugovicy-tekstura-2.jpg","images/polo-pugovicy-tekstura-3.jpg","images/polo-pugovicy-tekstura-4.jpg"],
+  {id:9,name:"Поло на пуговицах текстурное зелёное",category:"Поло",price:3690,tag:null,feat:false,tone:"#3f4a2c",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-pugovicy-tekstura-1.jpg","images/polo-pugovicy-tekstura-2.jpg"],
    desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт в носке обеспечивает состав из натурального хлопка. Классический воротник на пуговицах и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
    details:{Состав:"Хлопок",Воротник:"На пуговицах",Уход:"Стирка 30°"}},
 
-  {id:10,name:"Рубашка line",category:"Рубашки",price:4390,tag:null,feat:true,tone:"#1c1c1c",
-   sizes:["S","M","L","XL","2XL"],colors:["Коричневый","Чёрный","Бежевый"],
+  {id:10,name:"Рубашка line чёрная",category:"Рубашки",price:4390,tag:null,feat:true,tone:"#1c1c1c",
+   sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/rubashka-line-1.jpg","images/rubashka-line-2.jpg","images/rubashka-line-3.jpg"],
    desc:"Рубашка с трендовой полоской — отличное дополнение летних образов. Натуральный состав 100% хлопок и свободная посадка. Базовые пастельные оттенки легко впишутся в любой гардероб.",
    details:{Состав:"100% хлопок",Посадка:"Свободная",Уход:"Стирка 30°"}},
@@ -356,8 +374,8 @@ const PRODUCTS=[
    desc:"Рубашка с длинным рукавом из 100% хлопка с текстурой льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
    details:{Состав:"100% хлопок, текстура льна",Рукав:"Длинный",Уход:"Стирка 30°"}},
 
-  {id:13,name:"Рубашка OPEN",category:"Рубашки",price:4390,tag:null,feat:false,tone:"#43352a",
-   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Коричневый"],
+  {id:13,name:"Рубашка OPEN коричневая",category:"Рубашки",price:4390,tag:null,feat:false,tone:"#43352a",
+   sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/rubashka-open-1.jpg","images/rubashka-open-2.jpg","images/rubashka-open-3.jpg"],
    desc:"Рубашка прямого кроя с изысканным открытым воротником из льна и хлопка — отличный вариант для лета: дышащий, лёгкий материал. Хорошо сочетается с шортами и брюками.",
    details:{Состав:"Лён / хлопок",Воротник:"Открытый",Крой:"Прямой"}},
@@ -504,7 +522,325 @@ const PRODUCTS=[
    sizes:["S","XL","2XL"],colors:["Чёрный","Серый","Зелёный","Белый"],
    images:["images/polo-dlinnyy-rukav-1.jpg","images/polo-dlinnyy-rukav-2.jpg"],
    desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт в носке обеспечивает состав из натурального хлопка. Трендовый открытый воротник без замка и пуговиц и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
-   details:{Состав:"Хлопок",Воротник:"Открытый, без застёжки",Производство:"Турция"}}
+   details:{Состав:"Хлопок",Воротник:"Открытый, без застёжки",Производство:"Турция"}},
+
+  {id:34,name:"Очки Wood",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#3a2f28",
+   sizes:[],colors:[],
+   images:["images/ochki-wood-1.jpg","images/ochki-wood-2.jpg","images/ochki-wood-3.jpg"],
+   desc:"Имиджевые очки без оправы гармонично сидят на лице и визуально не «режут» форму лица. На дужках — неброская текстура дерева, что придаёт очкам изысканности и утончённости.",
+   details:{Тип:"Имиджевые",Оправа:"Безободковая",Дужки:"Текстура дерева"}},
+
+  {id:35,name:"Сумка mini",category:"Аксессуары",price:2890,tag:null,feat:false,tone:"#141414",
+   sizes:[],colors:[],
+   images:["images/sumka-mini-1.jpg","images/sumka-mini-2.jpg"],
+   desc:"Минималистичная чёрная сумка-кроссбоди из гладкой экокожи. Компактная прямоугольная форма с закруглёнными углами. Застёжка на молнию по верхнему краю. На лицевой стороне дополнительный карман на молнии — удобно для быстрого доступа к телефону или картам.",
+   details:{Материал:"Экокожа",Тип:"Кроссбоди",Застёжка:"Молния"}},
+
+  {id:36,name:"Сумка с монетницей коричневая",category:"Аксессуары",price:2590,tag:null,feat:false,tone:"#3b2b24",
+   sizes:[],colors:[],
+   images:["images/sumka-monetnica-brown-1.jpg","images/sumka-monetnica-brown-2.jpg"],
+   desc:"Сумка из экокожи с небольшим отделением-монетницей на карабине. Основная сумка на молнии — вместительная, но компактная. Монетница крепится к ремню отдельно: удобно для мелочи, наушников или ключей. Ремень регулируется по длине.",
+   details:{Материал:"Экокожа",Ремень:"Регулируется",Комплект:"Сумка + монетница"}},
+
+  {id:37,name:"Сумка Portf. коричневая",category:"Аксессуары",price:3190,tag:null,feat:false,tone:"#6e6157",
+   sizes:[],colors:[],
+   images:["images/sumka-portf-brown-1.jpg","images/sumka-portf-brown-2.jpg"],
+   desc:"Вместительная сумка в спокойных тонах — сдержанно и элегантно. Мягкий материал, удобная форма. Широкий регулируемый ремень удобно носится на плече или наискосок. Клапан на магнитной застёжке и молнии надёжно защищает содержимое. Поместится телефон, кошелёк, документы и мелочи.",
+   details:{Материал:"Экокожа",Ремень:"Регулируется",Застёжка:"Магнит / молния"}},
+
+  {id:38,name:"Сумка текстурная чёрная",category:"Аксессуары",price:3190,tag:null,feat:false,tone:"#141414",
+   sizes:[],colors:[],
+   images:["images/sumka-teksturnaya-1.jpg","images/sumka-teksturnaya-2.jpg","images/sumka-teksturnaya-3.jpg"],
+   desc:"Текстурная каркасная сумка из экокожи. Внутри — потайной карман для мелочей и вместительный основной отдел; в комплекте ремешок. Благодаря каркасу сумка отлично держит форму.",
+   details:{Материал:"Экокожа, текстурная",Форма:"Каркасная",Комплект:"+ ремешок"}},
+
+  {id:39,name:"Сумка текстурная белая",category:"Аксессуары",price:3190,tag:null,feat:false,tone:"#e8e4da",
+   sizes:[],colors:[],
+   images:["images/sumka-teksturnaya-white-1.jpg","images/sumka-teksturnaya-white-2.jpg","images/sumka-teksturnaya-white-3.jpg","images/sumka-teksturnaya-white-4.jpg","images/sumka-teksturnaya-white-5.jpg"],
+   desc:"Текстурная каркасная сумка из экокожи в молочном цвете. Внутри — потайной карман для мелочей и вместительный основной отдел; в комплекте ремешок. Благодаря каркасу сумка отлично держит форму.",
+   details:{Материал:"Экокожа, текстурная",Форма:"Каркасная",Комплект:"+ ремешок"}},
+
+  {id:40,name:"Очки авиа фотохром",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#3a3a38",
+   sizes:[],colors:[],
+   images:["images/ochki-avia-fotohrom-1.jpg","images/ochki-avia-fotohrom-2.jpg","images/ochki-avia-fotohrom-3.jpg"],
+   desc:"Фотохромные очки с геометрической оправой. Изящная тонкая металлическая оправа серебристого оттенка. Линзы фотохромные: в помещении остаются слегка тонированными, а на ярком солнце автоматически темнеют, защищая глаза.",
+   details:{Тип:"Фотохромные",Оправа:"Металл, серебристая",Линзы:"Фотохромные"}},
+
+  {id:41,name:"Очки «Легенда»",category:"Аксессуары",price:1490,tag:null,feat:false,tone:"#1a1a1a",
+   sizes:[],colors:[],
+   images:["images/ochki-legenda-1.jpg","images/ochki-legenda-2.jpg"],
+   desc:"Имиджевые очки, известные по фильму «Легенда». Линзы прозрачные, не искажают. Акцентная оправа по верхнему краю придаёт образу изысканности и утончённости, хорошо сочетаются в классических комплектах.",
+   details:{Тип:"Имиджевые",Оправа:"Акцент по верхнему краю",Линзы:"Прозрачные"}},
+
+  {id:42,name:"Очки VOLUME",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#6a5545",
+   sizes:[],colors:[],
+   images:["images/ochki-volume-1.jpg","images/ochki-volume-2.jpg"],
+   desc:"Солнцезащитные очки с акцентной объёмной оправой и градиентом цвета. Аксессуар отлично дополнит образы, подходят для повседневной носки.",
+   details:{Тип:"Солнцезащитные",Оправа:"Объёмная, градиент",Линзы:"Затемнённые"}},
+
+  {id:43,name:"Очки «Хамелеон»",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#4a4038",
+   sizes:[],colors:[],
+   images:["images/ochki-hameleon-1.jpg","images/ochki-hameleon-2.jpg"],
+   desc:"Очки «хамелеон» без оправы. Линзы автоматически адаптируются к освещению: защищают от яркого солнца и остаются прозрачными в помещении. Прямоугольная форма универсально подходит большинству типов лица, подчёркивая черты без визуального перегруза.",
+   details:{Тип:"Фотохромные",Оправа:"Безободковая",Линзы:"Хамелеон"}},
+
+  {id:44,name:"Очки DUO",category:"Аксессуары",price:1990,tag:null,feat:false,tone:"#4a4a48",
+   sizes:[],colors:[],
+   images:["images/ochki-duo-1.jpg","images/ochki-duo-2.jpg"],
+   desc:"Очки с выразительной геометрической формой линз. Акцентная оправа создаёт современный образ. Тёмная металлическая оправа идеально сочетается с минималистичным дизайном — универсальный аксессуар для повседневной носки.",
+   details:{Тип:"Имиджевые",Оправа:"Тёмный металл, геометрия"}},
+
+  {id:45,name:"Цепочка",category:"Аксессуары",price:690,oldPrice:1590,tag:null,feat:false,tone:"#8a8a88",
+   sizes:[],colors:[],
+   images:["images/cepochka-1.jpg","images/cepochka-2.jpg"],
+   desc:"Брутальный аксессуар для образов. Цепочка с достаточно толстым плетением из бижутерного сплава, с регулировкой длины. Сверху — защитный слой для блеска и износостойкости. В наличии два варианта плетения и длины.",
+   details:{Материал:"Бижутерный сплав",Длина:"Регулируется",Покрытие:"Защитный слой"}},
+
+  {id:46,name:"Кошелёк натуральная кожа",category:"Аксессуары",price:1790,tag:null,feat:false,tone:"#3d2a1e",
+   sizes:[],colors:[],
+   images:["images/koshelek-1.jpg","images/koshelek-2.jpg","images/koshelek-3.jpg"],
+   desc:"Кошелёк из натуральной кожи ручной работы — изысканный аксессуар, подчёркивающий статус. Матовая, приятная на ощупь кожа, ровные строчки. Внутри: отделение под наличные, отделения для карт и для монет.",
+   details:{Материал:"Натуральная кожа",Работа:"Ручная",Отделения:"Купюры, карты, монеты"}},
+
+  {id:47,name:"Барсетка ручной работы",category:"Аксессуары",price:3290,tag:null,feat:false,tone:"#2a352b",
+   sizes:[],colors:[],
+   images:["images/barsetka-1.jpg","images/barsetka-2.jpg","images/barsetka-3.jpg"],
+   desc:"Небольшая сумка из натуральной кожи ручной работы. Насыщенный изумрудный цвет подчеркнёт статус и станет интересным акцентом в образе.",
+   details:{Материал:"Натуральная кожа",Работа:"Ручная",Цвет:"Изумрудный"}},
+
+  {id:48,name:"Сумка прямоугольная",category:"Аксессуары",price:2890,tag:null,feat:false,tone:"#e8e2d6",
+   sizes:[],colors:["Молочный","Чёрный"],
+   images:["images/sumka-pryamougolnaya-1.jpg","images/sumka-pryamougolnaya-2.jpg","images/sumka-pryamougolnaya-3.jpg","images/sumka-pryamougolnaya-4.jpg"],
+   desc:"Прямоугольная сумка из экокожи — удобный повседневный аксессуар. Оснащена каркасом и несколькими небольшими карманами, вмещает всё необходимое. В комплекте регулируемый ремешок.",
+   details:{Материал:"Экокожа",Форма:"Каркасная",Комплект:"+ ремешок"}},
+
+  {id:49,name:"Очки «Джентльмены»",category:"Аксессуары",price:1790,tag:null,feat:false,tone:"#141414",
+   sizes:[],colors:["Чайный лист","Чёрный"],
+   images:["images/ochki-dzhentelmeny-1.jpg","images/ochki-dzhentelmeny-2.jpg"],
+   desc:"Очки, известные по фильму «Джентльмены». Линзы не искажают и имеют лёгкий синий блик благодаря компьютерному покрытию, которое защищает глаза от воздействия мониторов и гаджетов.",
+   details:{Тип:"Имиджевые",Покрытие:"Компьютерное (защита от бликов)",Линзы:"Прозрачные"}},
+
+  {id:50,name:"Зип-худи серый",category:"Свитшоты и худи",price:4390,tag:null,feat:false,tone:"#9a9893",
+   sizes:["S","M","L","XL","2XL"],colors:["Коричневый","Чёрный","Серый"],
+   images:["images/zip-hudi-seryy-1.jpg","images/zip-hudi-seryy-2.jpg"],
+   desc:"Базовое зип-худи на замке в качественном исполнении. Хлопковый материал без флиса — плотный футер 3-нитка: хорошо дышит, а за счёт плотности удерживает тепло и обеспечивает терморегуляцию. Базовая oversize-модель с качественным металлическим матовым замком.",
+   details:{Материал:"Футер 3-нитка, без флиса",Крой:"Oversize",Замок:"Металл, матовый"}},
+
+  {id:51,name:"Лонгслив Oversize чёрный",category:"Свитшоты и худи",price:2890,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Белый"],
+   images:["images/longsliv-oversize-1.jpg","images/longsliv-oversize-2.jpg","images/longsliv-oversize-3.jpg"],
+   desc:"Качественный и стильный лонгслив из плотного хлопкового материала. Отлично держит форму, актуальные длина и крой, плотные качественные манжеты и воротник. Хорошо сочетается со свободными джинсами и брюками, подойдёт и как нижний слой.",
+   details:{Материал:"Плотный хлопок",Крой:"Oversize",Производство:"Турция"}},
+
+  {id:52,name:"Поло текстурное молочное",category:"Поло",price:3690,tag:null,feat:false,tone:"#e8e2d2",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-teksturnyy-1.jpg","images/polo-teksturnyy-2.jpg","images/polo-teksturnyy-3.jpg"],
+   desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт обеспечивает состав из натуральной вискозы и хлопка. Трендовый открытый воротник без замка и пуговиц и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
+   details:{Состав:"Вискоза / хлопок",Воротник:"Открытый, без застёжки",Производство:"Турция"}},
+
+  {id:53,name:"Свитшот-поло бежевый",category:"Свитшоты и худи",price:3690,tag:null,feat:false,tone:"#d8cbb0",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/svitshot-polo-beige-1.jpg","images/svitshot-polo-beige-2.jpg","images/svitshot-polo-beige-3.jpg"],
+   desc:"Трендовый свитшот-поло — сочетание стиля и комфорта на прохладную погоду. Очень мягкий, бархатистый материал, приятный к телу. Базовая модель, которая отлично впишется в любой гардероб.",
+   details:{Крой:"Свободный",Уход:"Стирка 30°"}},
+
+  {id:54,name:"Поло гладкое бежевое",category:"Поло",price:3690,tag:null,feat:false,tone:"#e8e2d2",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-gladkoe-beige-1.jpg","images/polo-gladkoe-beige-2.jpg","images/polo-gladkoe-beige-3.jpg"],
+   desc:"Поло классического кроя с дышащим вискозным составом. Воротник на полузамке с гладким ходом; текстура плетения добавляет изысканности и хорошо смотрится в повседневных и классических образах.",
+   details:{Состав:"Вискоза",Воротник:"Полузамок"}},
+
+  {id:55,name:"Поло на пуговицах текстурное бежевое",category:"Поло",price:3690,tag:null,feat:false,tone:"#e4ddc9",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-pugovicy-beige-1.jpg","images/polo-pugovicy-beige-2.jpg"],
+   desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт обеспечивает состав из натурального хлопка. Классический воротник на пуговицах и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
+   details:{Состав:"Хлопок",Воротник:"На пуговицах"}},
+
+  {id:56,name:"Поло текстурное чёрное",category:"Поло",price:3690,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-teksturnoe-black-1.jpg","images/polo-teksturnoe-black-2.jpg"],
+   desc:"Поло из невероятно мягкого, приятного к телу и эластичного текстурного материала. Комфорт обеспечивает состав из натуральной вискозы и хлопка. Трендовый открытый воротник без замка и пуговиц и отличная посадка сделают поло основой стильных образов, а вертикальная текстура визуально скорректирует фигуру.",
+   details:{Состав:"Вискоза / хлопок",Воротник:"Открытый, без застёжки",Производство:"Турция"}},
+
+  {id:57,name:"Поло с длинным рукавом молочное",category:"Поло",price:3890,tag:null,feat:false,tone:"#e8e2d2",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-dlinnyy-rukav-milk-1.jpg","images/polo-dlinnyy-rukav-milk-2.jpg","images/polo-dlinnyy-rukav-milk-3.jpg"],
+   desc:"Поло с длинным рукавом из мягкого, приятного к телу и эластичного текстурного материала. Состав из натуральной вискозы и хлопка. Трендовый открытый воротник без замка и пуговиц, вертикальная текстура визуально вытягивает фигуру.",
+   details:{Состав:"Вискоза / хлопок",Рукав:"Длинный",Воротник:"Открытый",Производство:"Турция"}},
+
+  {id:58,name:"Поло с длинным рукавом чёрное",category:"Поло",price:3890,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-dlinnyy-rukav-black-1.jpg","images/polo-dlinnyy-rukav-black-2.jpg"],
+   desc:"Поло с длинным рукавом из мягкого, приятного к телу и эластичного текстурного материала. Состав из натуральной вискозы и хлопка. Трендовый открытый воротник без замка и пуговиц, вертикальная текстура визуально вытягивает фигуру.",
+   details:{Состав:"Вискоза / хлопок",Рукав:"Длинный",Воротник:"Открытый",Производство:"Турция"}},
+
+  {id:59,name:"Поло viskon чёрное",category:"Поло",price:3690,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-viskon-black-1.jpg","images/polo-viskon-black-2.jpg"],
+   desc:"Поло классического кроя с вискозным составом. Воротник на полузамке с гладким ходом, текстурные полоски добавляют изысканности образу и визуально вытягивают фигуру.",
+   details:{Состав:"Вискоза",Воротник:"Полузамок"}},
+
+  {id:60,name:"Поло viskon белое",category:"Поло",price:3690,tag:null,feat:false,tone:"#efeade",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/polo-viskon-white-1.jpg","images/polo-viskon-white-2.jpg"],
+   desc:"Поло классического кроя с вискозным составом. Воротник на полузамке с гладким ходом, текстурные полоски добавляют изысканности образу и визуально вытягивают фигуру.",
+   details:{Состав:"Вискоза",Воротник:"Полузамок"}},
+
+  {id:61,name:"Рубашка Metallic",category:"Рубашки",price:4690,tag:null,feat:false,tone:"#4a3a2a",
+   sizes:["S","M","L","XL","2XL"],colors:["Коричневый","Бежевый"],
+   images:["images/rubashka-metallic-1.jpg","images/rubashka-metallic-2.jpg","images/rubashka-metallic-3.jpg"],
+   desc:"Рубашка из премиум-материалов с матовыми металлическими пуговицами. Натуральный смесовый состав: лиоцелл, хлопок и лён — отлично дышит и подходит для разных образов.",
+   details:{Состав:"Лиоцелл / хлопок / лён",Пуговицы:"Матовый металл"}},
+
+  {id:62,name:"Рубашка ease коричневая",category:"Рубашки",price:3890,tag:null,feat:false,tone:"#6b5847",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-ease-1.jpg","images/rubashka-ease-2.jpg","images/rubashka-ease-3.jpg"],
+   desc:"Рубашка классического кроя из лиоцелла, вискозы и льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
+   details:{Состав:"Лиоцелл / вискоза / лён",Крой:"Классический"}},
+
+  {id:63,name:"Рубашка line коричневая",category:"Рубашки",price:4390,tag:null,feat:false,tone:"#5a4634",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-line-brown-1.jpg","images/rubashka-line-brown-2.jpg","images/rubashka-line-brown-3.jpg"],
+   desc:"Рубашка с трендовой полоской — отличное дополнение летних образов. Натуральный состав 100% хлопок и свободная посадка. Базовые пастельные оттенки легко впишутся в любой гардероб.",
+   details:{Состав:"100% хлопок",Посадка:"Свободная"}},
+
+  {id:64,name:"Классическая рубашка белая",category:"Рубашки",price:3190,tag:null,feat:false,tone:"#eeeeea",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-klassicheskaya-white-1.jpg","images/rubashka-klassicheskaya-white-2.jpg"],
+   desc:"Классическая рубашка из плотного фактурного материала premium-качества. Воротник из плотного материала отлично держит форму.",
+   details:{Материал:"Плотный, фактурный",Крой:"Классический"}},
+
+  {id:65,name:"Рубашка в полоску бежевая",category:"Рубашки",price:3690,tag:null,feat:false,tone:"#ddceb0",
+   sizes:["S","M","L","XL","2XL"],colors:["Голубой","Бежевый"],
+   images:["images/rubashka-poloska-beige-1.jpg","images/rubashka-poloska-beige-2.jpg"],
+   desc:"Рубашка классической посадки с актуальной полоской в стиле old money. Качественный пошив и состав из льна и хлопка сделают её незаменимой для летних образов с шортами, брюками и джинсами.",
+   details:{Состав:"Лён / хлопок",Производство:"Турция"}},
+
+  {id:66,name:"Рубашка TONE чёрная",category:"Рубашки",price:4190,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-tone-black-1.jpg","images/rubashka-tone-black-2.jpg","images/rubashka-tone-black-3.jpg"],
+   desc:"Рубашка прямого кроя из целлюлозы эвкалиптового дерева — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
+   details:{Состав:"Целлюлоза (эвкалипт)",Крой:"Прямой"}},
+
+  {id:67,name:"Рубашка OPEN бежевая",category:"Рубашки",price:4390,tag:null,feat:false,tone:"#e4dcc8",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-open-beige-1.jpg","images/rubashka-open-beige-2.jpg","images/rubashka-open-beige-3.jpg"],
+   desc:"Рубашка прямого кроя с изысканным открытым воротником из льна и хлопка — отличный вариант для лета: дышащий, лёгкий материал. Хорошо сочетается с шортами и брюками.",
+   details:{Состав:"Лён / хлопок",Воротник:"Открытый",Крой:"Прямой"}},
+
+  {id:68,name:"Рубашка mustard",category:"Рубашки",price:3690,tag:null,feat:false,tone:"#7a5a34",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Коричневый"],
+   images:["images/rubashka-mustard-1.jpg","images/rubashka-mustard-2.jpg","images/rubashka-mustard-3.jpg"],
+   desc:"Рубашка с коротким рукавом из 100% хлопка с текстурой льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
+   details:{Состав:"100% хлопок, текстура льна",Рукав:"Короткий"}},
+
+  {id:69,name:"Рубашка LINEN",category:"Рубашки",price:3990,tag:null,feat:false,tone:"#ddd6c4",
+   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Белый","Голубой"],
+   images:["images/rubashka-linen-1.jpg","images/rubashka-linen-2.jpg"],
+   desc:"Рубашка из льна и хлопка, 100% натуральный материал. Классический крой — хорошо смотрится и первым слоем, и поверх футболки; сочетается с брюками и шортами.",
+   details:{Состав:"Лён / хлопок",Крой:"Классический"}},
+
+  {id:70,name:"Рубашка detail",category:"Рубашки",price:4990,tag:null,feat:false,tone:"#efe9dd",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-detail-1.jpg","images/rubashka-detail-2.jpg","images/rubashka-detail-3.jpg"],
+   desc:"Рубашка из премиум-материалов с акцентными изысканными деталями на кармане. Натуральный состав из лиоцелла и льна — отлично дышит, подойдёт для летних образов.",
+   details:{Состав:"Лиоцелл / лён",Детали:"Акцент на кармане"}},
+
+  {id:71,name:"Рубашка PREMIUM тёмно-синяя",category:"Рубашки",price:4590,tag:null,feat:false,tone:"#23262e",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-premium-navy-1.jpg","images/rubashka-premium-navy-2.jpg","images/rubashka-premium-navy-3.jpg"],
+   desc:"Рубашка из премиум-материалов с акцентными изысканными деталями. Натуральный состав из лиоцелла и хлопка — отлично дышит, подойдёт для летних образов.",
+   details:{Состав:"Лиоцелл / хлопок",Детали:"Акцентные"}},
+
+  {id:72,name:"Рубашка ease молочная",category:"Рубашки",price:3890,tag:null,feat:false,tone:"#efe9dd",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/rubashka-ease-milk-1.jpg","images/rubashka-ease-milk-2.jpg","images/rubashka-ease-milk-3.jpg"],
+   desc:"Рубашка классического кроя из лиоцелла, вискозы и льна — отличный вариант для лета: дышащий, лёгкий материал. В комплект можно приобрести брюки из идентичного материала и сочетать как костюм.",
+   details:{Состав:"Лиоцелл / вискоза / лён",Крой:"Классический"}},
+
+  {id:73,name:"Лоферы замшевые чёрные",category:"Обувь",price:6690,tag:null,feat:false,tone:"#141414",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/lofery-zamsha-black-1.jpg","images/lofery-zamsha-black-2.jpg"],
+   desc:"Лоферы из двухслойного материала: сверху натуральная замша, внутри натуральная кожа. За счёт натуральных материалов отлично дышат и комфортно сидят на ноге, при этом держат форму.",
+   details:{Верх:"Натуральная замша",Внутри:"Натуральная кожа"}},
+
+  {id:74,name:"Полуклассические кеды (кожа) коричневые",category:"Обувь",price:6890,tag:null,feat:false,tone:"#4a3423",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/kedy-poluklass-leather-1.jpg","images/kedy-poluklass-leather-2.jpg","images/kedy-poluklass-leather-3.jpg"],
+   desc:"Полуклассические кеды из натуральной кожи Nappa. Минимализм, натуральные материалы и идеальное исполнение дополнят повседневные и вечерние образы. Анатомическая закруглённая подошва обеспечивает мягкость и комфорт движений.",
+   details:{Материал:"Натуральная кожа Nappa",Подошва:"Анатомическая",Производство:"Турция"}},
+
+  {id:75,name:"Полуклассические кеды (нубук) чёрные",category:"Обувь",price:6890,tag:null,feat:false,tone:"#161616",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/kedy-poluklass-nubuk-1.jpg","images/kedy-poluklass-nubuk-2.jpg","images/kedy-poluklass-nubuk-3.jpg"],
+   desc:"Полуклассические кеды из нубука (мелковорсистая шлифованная кожа). Минимализм, натуральные материалы и идеальное исполнение дополнят повседневные и вечерние образы. Анатомическая закруглённая подошва обеспечивает мягкость и комфорт движений.",
+   details:{Материал:"Нубук",Подошва:"Анатомическая",Производство:"Турция"}},
+
+  {id:76,name:"Лоферы из натуральной кожи чёрные",category:"Обувь",price:7290,tag:null,feat:false,tone:"#161616",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/lofery-kozha-black-1.jpg","images/lofery-kozha-black-2.jpg","images/lofery-kozha-black-3.jpg"],
+   desc:"Лоферы из натуральной гладкой кожи. Отлично подойдут к строгим и вечерним образам, добавляя изысканности и брутальности. Внутри мягкая амортизационная стелька — очень удобны в носке; натуральные материалы износостойкие и позволяют ногам дышать.",
+   details:{Материал:"Натуральная кожа",Стелька:"Амортизационная"}},
+
+  {id:77,name:"Кеды summer",category:"Обувь",price:5890,tag:null,feat:false,tone:"#8a6a4a",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/kedy-summer-1.jpg","images/kedy-summer-2.jpg"],
+   desc:"Полуклассические кеды. Минимализм, натуральные материалы и идеальное исполнение дополнят повседневные и вечерние образы. Лёгкая подошва обеспечивает мягкость и комфорт движений.",
+   details:{Крой:"Полуклассический",Подошва:"Лёгкая"}},
+
+  {id:78,name:"Кеды CASUAL",category:"Обувь",price:6990,tag:null,feat:false,tone:"#1a1a1a",
+   sizes:["40","41","42","43","44","45","46"],colors:[],
+   images:["images/kedy-casual-1.jpg","images/kedy-casual-2.jpg","images/kedy-casual-3.jpg"],
+   desc:"Элегантные кеды из натуральной кожи с акцентами из замши. Внутри и снаружи — натуральная кожа, мягкая замша добавляет текстуры и акцента. Прочная практичная подошва не требует особого ухода. Идеальны для города, прогулок, работы и встреч — строго, но не перегруженно.",
+   details:{Материал:"Натуральная кожа + замша",Подошва:"Практичная"}},
+
+  {id:79,name:"Джемпер на полузамке коричневый",category:"Свитеры",price:5990,tag:null,feat:false,tone:"#5a4634",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhemper-poluzamok-brown-1.jpg","images/dzhemper-poluzamok-brown-2.jpg"],
+   desc:"Джемпер на полузамке из трендового вязаного материала в мелкий рубчик, что визуально вытягивает и стройнит. Премиальный состав 90% хлопка и 10% шерсти и качественная фурнитура делают его комфортным в носке и износостойким.",
+   details:{Состав:"90% хлопок, 10% шерсть",Застёжка:"Полузамок"}},
+
+  {id:80,name:"Джемпер на полузамке бежевый",category:"Свитеры",price:5990,tag:null,feat:false,tone:"#e2d9c4",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhemper-poluzamok-beige-1.jpg","images/dzhemper-poluzamok-beige-2.jpg"],
+   desc:"Джемпер на полузамке из трендового вязаного материала в мелкий рубчик, что визуально вытягивает и стройнит. Премиальный состав 90% хлопка и 10% шерсти и качественная фурнитура делают его комфортным в носке и износостойким.",
+   details:{Состав:"90% хлопок, 10% шерсть",Застёжка:"Полузамок"}},
+
+  {id:81,name:"Свитер на полузамке бежевый",category:"Свитеры",price:3890,tag:null,feat:false,tone:"#ddd3bd",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-poluzamok-beige-1.jpg","images/sviter-poluzamok-beige-2.jpg","images/sviter-poluzamok-beige-3.jpg"],
+   desc:"Уютный свитер на полузамке — идеальный выбор для прохладных дней. Мягкая смесовая пряжа с хлопком дышит, не вызывает раздражения и отлично держит форму. Плотная фактурная вязка, стильный крой и металлическая молния добавляют акцента. Легко сочетается с джинсами, брюками и куртками.",
+   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Полузамок",Производство:"Турция"}},
+
+  {id:82,name:"Свитер на полузамке белый",category:"Свитеры",price:3890,tag:null,feat:false,tone:"#efeae0",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-poluzamok-white-1.jpg","images/sviter-poluzamok-white-2.jpg"],
+   desc:"Уютный свитер на полузамке — идеальный выбор для прохладных дней. Мягкая смесовая пряжа с хлопком дышит, не вызывает раздражения и отлично держит форму. Плотная фактурная вязка, стильный крой и металлическая молния добавляют акцента.",
+   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Полузамок",Производство:"Турция"}},
+
+  {id:83,name:"Свитер на молнии серый",category:"Свитеры",price:5890,tag:null,feat:false,tone:"#9a9a96",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-molniya-gray-1.jpg","images/sviter-molniya-gray-2.jpg","images/sviter-molniya-gray-3.jpg"],
+   desc:"Свитер на молнии из плотного 100% хлопка премиум-класса — невероятная текстура и долговечность. Прочная молния с гладким ходом и качественная фурнитура. Глубокие оттенки и классический крой подчёркивают индивидуальность.",
+   details:{Состав:"100% хлопок премиум",Застёжка:"Молния",Крой:"Классический"}},
+
+  {id:84,name:"Свитер PREMIUM FULL коричневый",category:"Свитеры",price:6990,tag:null,feat:false,tone:"#4a3226",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-premium-full-brown-1.jpg","images/sviter-premium-full-brown-2.jpg"],
+   desc:"Свитер PREMIUM FULL из плотного 100% хлопка премиум-класса — невероятная текстура и долговечность. Прочная металлическая молния с гладким ходом и качественная фурнитура. Глубокие оттенки и классический крой подчёркивают индивидуальность.",
+   details:{Состав:"100% хлопок премиум",Застёжка:"Металлическая молния"}},
+
+  {id:85,name:"Свитер-поло серый",category:"Свитеры",price:3990,tag:null,feat:false,tone:"#9a938a",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-polo-gray-1.jpg","images/sviter-polo-gray-2.jpg","images/sviter-polo-gray-3.jpg"],
+   desc:"Свитер-поло с отложным воротником и красивой акцентной текстурой. Натуральные материалы в составе отлично пропускают воздух — комфортно в помещении.",
+   details:{Воротник:"Отложной",Производство:"Турция"}},
+
+  {id:86,name:"Свитер на полузамке синий",category:"Свитеры",price:3890,tag:null,feat:false,tone:"#23293a",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/sviter-poluzamok-navy-1.jpg","images/sviter-poluzamok-navy-2.jpg"],
+   desc:"Уютный свитер на полузамке — идеальный выбор для прохладных дней. Мягкая смесовая пряжа с хлопком дышит, не вызывает раздражения и отлично держит форму. Плотная фактурная вязка, стильный крой и металлическая молния добавляют акцента.",
+   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Полузамок",Производство:"Турция"}}
 ];
 
 let activeCat="Все";
@@ -609,7 +945,7 @@ function quickAdd(p){addToCart(p,(p.sizes&&p.sizes[0])||null,(p.colors&&p.colors
 /* ---- product page ---- */
 const productView=document.getElementById("productView"),homeView=document.getElementById("homeView");
 let selSize=null,selColor=null;
-function openProduct(id){
+function openProduct(id,push){
   const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
   selSize=(p.sizes&&p.sizes.length)?null:"__none__";
   selColor=(p.colors&&p.colors.length)?null:"__none__";
@@ -631,9 +967,9 @@ function openProduct(id){
 
   productView.innerHTML=
     '<div class="pd">'+
-      '<div class="pd-media" style="background:'+p.tone+'"><div class="ph">SIKOR — '+p.name+'</div>'+mainImg+thumbs+'</div>'+
+      '<div class="pd-media" style="background:'+p.tone+'"><button class="pd-back" id="backBtn" aria-label="Назад">←</button><div class="ph">SIKOR — '+p.name+'</div>'+mainImg+thumbs+'</div>'+
       '<div class="pd-info">'+
-        '<div class="crumb"><button id="backBtn">← Каталог</button> / '+p.category+'</div>'+
+        '<div class="crumb">'+p.category+'</div>'+
         '<h1>'+p.name+'</h1>'+
         '<div class="pd-price">'+priceHtml(p)+'</div>'+
         '<p class="pd-desc">'+p.desc+'</p>'+
@@ -658,7 +994,7 @@ function openProduct(id){
   const sizesEl=productView.querySelector("#sizes");
   if(sizesEl)sizesEl.querySelectorAll(".opt").forEach(btn=>{btn.onclick=()=>{selSize=btn.dataset.s;sizesEl.querySelectorAll(".opt").forEach(b=>b.classList.remove("active"));btn.classList.add("active");updateNote(p);};});
 
-  productView.querySelector("#backBtn").onclick=showHome;
+  productView.querySelector("#backBtn").onclick=()=>{if(history.state&&history.state.v==="p")history.back();else showHome();};
   productView.querySelector("#addBtn").onclick=()=>{
     if(selColor===null){document.getElementById("note").textContent="Выберите цвет";return;}
     if(selSize===null){document.getElementById("note").textContent="Выберите размер";return;}
@@ -667,6 +1003,7 @@ function openProduct(id){
   };
   updateNote(p);
   homeView.classList.remove("active");aboutView.classList.remove("active");productView.classList.add("active");window.scrollTo(0,0);
+  if(push!==false)history.pushState({v:"p",id:id},"");
 }
 function updateNote(p){
   const n=document.getElementById("note");if(!n)return;
@@ -677,13 +1014,22 @@ function updateNote(p){
 }
 const aboutView=document.getElementById("aboutView");
 function showHome(){productView.classList.remove("active");aboutView.classList.remove("active");homeView.classList.add("active");}
-function showAbout(){homeView.classList.remove("active");productView.classList.remove("active");aboutView.classList.add("active");window.scrollTo(0,0);}
+function showAbout(push){homeView.classList.remove("active");productView.classList.remove("active");aboutView.classList.add("active");window.scrollTo(0,0);if(push!==false)history.pushState({v:"a"},"");}
 document.getElementById("logo").onclick=()=>{selectCat("Все",false);window.scrollTo({top:0,behavior:"smooth"});};
 document.getElementById("shopBtn").onclick=()=>document.getElementById("catalog").scrollIntoView({behavior:"smooth"});
 document.getElementById("searchBtn").onclick=()=>{showHome();document.getElementById("catalog").scrollIntoView({behavior:"smooth"});};
-document.getElementById("aboutBtn").onclick=showAbout;
-document.getElementById("aboutBack").onclick=()=>{showHome();window.scrollTo({top:0,behavior:"smooth"});};
+document.getElementById("aboutBtn").onclick=()=>showAbout();
+document.getElementById("aboutBack").onclick=()=>{if(history.state&&history.state.v==="a")history.back();else showHome();};
 document.getElementById("allLink").onclick=()=>selectCat("Все",true);
+
+/* ---- кнопка «назад» браузера/мыши/телефона возвращает в каталог, а не из сайта ---- */
+window.addEventListener("popstate",function(e){
+  var s=e.state;
+  if(!s||s.v==="home")showHome();
+  else if(s.v==="p")openProduct(s.id,false);
+  else if(s.v==="a")showAbout(false);
+});
+history.replaceState({v:"home"},"");
 
 /* ---- cart ---- */
 const drawer=document.getElementById("drawer"),overlay=document.getElementById("overlay"),cartBody=document.getElementById("cartBody"),cartTotal=document.getElementById("cartTotal"),cc=document.getElementById("cc");
@@ -716,6 +1062,19 @@ overlay.onclick=closeCart;
 
 /* ---- init ---- */
 buildCats();renderRail();renderGrid();renderCart();
+
+/* ---- высота шапки → чтобы липкая плашка категорий стояла ровно под ней ---- */
+(function(){
+  function setTop(){var t=document.querySelector(".top");if(t)document.documentElement.style.setProperty("--topbar",t.offsetHeight+"px");}
+  setTop();window.addEventListener("resize",setTop);window.addEventListener("load",setTop);
+})();
+
+/* ---- фоновое видео в hero: показываем только если hero.mp4 реально загрузился ---- */
+(function(){
+  var v=document.querySelector(".hero-video"),hero=document.querySelector(".hero");
+  if(!v||!hero)return;
+  v.addEventListener("loadeddata",function(){hero.classList.add("has-video");v.play&&v.play().catch(function(){});});
+})();
 </script>
 </body>
 </html>
