@@ -97,6 +97,39 @@
   .chip.salec{border-color:#e9b872;color:#e9b872}
   .chip.salec.active{background:#e9b872;color:#000;border-color:#e9b872}
 
+  /* ---- сортировка ---- */
+  .sortbtn{display:inline-flex;align-items:center;gap:9px;flex:none;margin-right:16px;
+           padding:7px 12px;border:1px solid var(--line-2);color:var(--grey);background:var(--bg);transition:all .18s}
+  .sortbtn:hover{border-color:#fff;color:#fff}
+  .sortbtn.on{border-color:#fff;color:#fff}
+  .sortbtn .si{display:flex;width:16px;height:16px;flex:none}
+  .sortbtn .si svg{width:100%;height:100%}
+  .sortbtn .sl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+  @media(min-width:641px){
+    .filters .fl{font-size:9px;letter-spacing:.18em}
+    .filters .chip{font-size:11px;padding:7px 13px}
+    .filters .fg{gap:12px}
+  }
+  @media(max-width:640px){
+    .sortbtn{position:fixed;top:calc(var(--topbar,70px) + 64px);right:12px;z-index:45;
+             width:40px;height:40px;padding:0;margin:0;justify-content:center;border-radius:50%;
+             background:rgba(0,0,0,.55);border-color:rgba(255,255,255,.4);color:#fff;
+             -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+             box-shadow:0 2px 10px rgba(0,0,0,.35);
+             opacity:0;pointer-events:none;transition:opacity .25s,background .2s}
+    .sortbtn.vis{opacity:1;pointer-events:auto}
+    .sortbtn .si{width:18px;height:18px}
+    .sortbtn .sl{display:none}
+    .sorttip{position:fixed;z-index:46;top:calc(var(--topbar,70px) + 74px);right:60px;
+             font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+             background:rgba(0,0,0,.72);color:#fff;padding:7px 10px;white-space:nowrap;
+             -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+             opacity:0;pointer-events:none;transition:opacity .2s}
+    .sorttip.show{opacity:1}
+  }
+  .sorttip{display:none}
+  @media(max-width:640px){.sorttip{display:block}}
+
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-top:1px solid var(--line)}
   @media(max-width:1150px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){.grid{grid-template-columns:1fr}}
@@ -253,6 +286,8 @@
         <div class="rc" id="rc"></div>
       </div>
       <div class="filters">
+        <button class="sortbtn" id="sortBtn" aria-label="Сортировка"><span class="si"></span><span class="sl">Сортировка</span></button>
+        <div class="sorttip" id="sortTip"></div>
         <div class="fg"><span class="fl">Категория</span><div class="chips" id="catChips"></div></div>
       </div>
       <div class="grid" id="grid"></div>
@@ -1411,9 +1446,63 @@ rail.addEventListener("scroll",updateRailNav,{passive:true});
 window.addEventListener("resize",updateRailNav);
 
 const grid=document.getElementById("grid"),rc=document.getElementById("rc");
+/* ---- сортировка ---- */
+const ARROWS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+
+  '<g class="au"><path d="M16 3.5V15"/><path d="M11.5 8L16 3.5L20.5 8"/></g>'+
+  '<g class="ad"><path d="M8 20.5V9"/><path d="M3.5 16L8 20.5L12.5 16"/></g></svg>';
+const STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+
+  '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>';
+const SORTS=[
+  {label:"Сортировка",  icon:ARROWS},
+  {label:"Цена ↑",      icon:ARROWS.replace('<g class="ad"','<g class="ad" opacity=".3"')},
+  {label:"Цена ↓",      icon:ARROWS.replace('<g class="au"','<g class="au" opacity=".3"')},
+  {label:"Популярное",  icon:STAR}
+];
+let sortMode=0; /* 0 — как в каталоге, 1 — цена ↑, 2 — цена ↓, 3 — популярное */
+function popScore(p){return (p.feat?0:4)+(p.tag?0:2)+(hasSale(p)?0:1);}
+function applySort(arr){
+  const a=arr.slice();
+  if(sortMode===1)a.sort((x,y)=>x.price-y.price);
+  else if(sortMode===2)a.sort((x,y)=>y.price-x.price);
+  else if(sortMode===3)a.sort((x,y)=>popScore(x)-popScore(y));
+  return a;
+}
+const sortBtn=document.getElementById("sortBtn"),sortTip=document.getElementById("sortTip");
+let tipTimer=null;
+function renderSortBtn(showTip){
+  const s=SORTS[sortMode];
+  sortBtn.querySelector(".si").innerHTML=s.icon;
+  sortBtn.querySelector(".sl").textContent=s.label;
+  sortBtn.classList.toggle("on",sortMode>0);
+  sortBtn.title="Сортировка: "+s.label;
+  sortBtn.setAttribute("aria-label","Сортировка: "+s.label);
+  if(showTip){
+    sortTip.textContent=s.label;sortTip.classList.add("show");
+    clearTimeout(tipTimer);tipTimer=setTimeout(()=>sortTip.classList.remove("show"),1500);
+  }
+}
+sortBtn.onclick=()=>{
+  sortMode=sortMode%3+1;renderSortBtn(true);renderGrid();
+  const top=(document.querySelector(".filters")||{}).offsetTop||0;
+  const bar=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar"))||70;
+  const f=document.querySelector(".filters");
+  if(f)window.scrollTo({top:f.getBoundingClientRect().top+window.pageYOffset-bar,behavior:"smooth"});
+};
+function updateSortVis(){
+  if(window.innerWidth>640){sortBtn.classList.add("vis");return;}
+  const cat=document.getElementById("catalog");if(!cat)return;
+  const r=cat.getBoundingClientRect();
+  const hv=document.getElementById("homeView");
+  const on=!!hv&&hv.classList.contains("active")&&r.top<window.innerHeight*0.55&&r.bottom>140;
+  sortBtn.classList.toggle("vis",on);
+  if(!on)sortTip.classList.remove("show");
+}
+window.addEventListener("scroll",updateSortVis,{passive:true});
+window.addEventListener("resize",updateSortVis);
+
 function filtered(){
-  if(activeCat==="Скидки")return PRODUCTS.filter(hasSale);
-  return PRODUCTS.filter(p=>activeCat==="Все"||p.category===activeCat);
+  if(activeCat==="Скидки")return applySort(PRODUCTS.filter(hasSale));
+  return applySort(PRODUCTS.filter(p=>activeCat==="Все"||p.category===activeCat));
 }
 function renderGrid(){
   const items=filtered();
@@ -1548,7 +1637,7 @@ document.getElementById("closeCart").onclick=closeCart;
 overlay.onclick=closeCart;
 
 /* ---- init ---- */
-buildCats();renderRail();renderGrid();renderCart();
+buildCats();renderRail();renderGrid();renderCart();renderSortBtn(false);updateSortVis();
 
 /* ---- высота шапки → чтобы липкая плашка категорий стояла ровно под ней ---- */
 (function(){
