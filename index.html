@@ -1481,13 +1481,14 @@ function renderSortBtn(showTip){
     clearTimeout(tipTimer);tipTimer=setTimeout(()=>sortTip.classList.remove("show"),1500);
   }
 }
-sortBtn.onclick=()=>{
-  sortMode=sortMode%3+1;renderSortBtn(true);renderGrid();
-  const top=(document.querySelector(".filters")||{}).offsetTop||0;
+function docTop(el){let y=0;while(el){y+=el.offsetTop;el=el.offsetParent;}return y;}
+function scrollToGrid(){
+  const f=document.querySelector(".filters");if(!f||!grid)return;
   const bar=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--topbar"))||70;
-  const f=document.querySelector(".filters");
-  if(f)window.scrollTo({top:f.getBoundingClientRect().top+window.pageYOffset-bar,behavior:"smooth"});
-};
+  const y=docTop(grid)-bar-f.offsetHeight;
+  window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+}
+sortBtn.onclick=()=>{sortMode=sortMode%3+1;renderSortBtn(true);renderGrid();scrollToGrid();};
 function updateSortVis(){
   if(window.innerWidth>640){sortBtn.classList.add("vis");return;}
   const cat=document.getElementById("catalog");if(!cat)return;
@@ -1650,6 +1651,140 @@ buildCats();renderRail();renderGrid();renderCart();renderSortBtn(false);updateSo
   var v=document.querySelector(".hero-video"),hero=document.querySelector(".hero");
   if(!v||!hero)return;
   v.addEventListener("loadeddata",function(){hero.classList.add("has-video");v.play&&v.play().catch(function(){});});
+})();
+
+/* ---- ASCII-логотип SIKOR с глитчем ---- */
+(function(){
+  const cv=document.getElementById("asciiLogo");if(!cv||!cv.getContext)return;
+  const ctx=cv.getContext("2d",{alpha:true});
+  const TEXT="SIKOR";
+  const RAMP=" .:-=+*#%@";                       /* от тёмного к светлому */
+  const NOISE="!<>-_\\/[]{}—=+*^?#%$&01".split("");
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const CHAR_AR=0.6;                             /* ширина/высота знакоместа моноширинного шрифта */
+  let cols=0,rows=0,cw=0,chh=0,dpr=1,base=[],raf=0,bursts=[],nextBurst=0;
+
+  function buildBase(){
+    const wrap=cv.parentElement;
+    const W=Math.max(240,wrap.clientWidth||cv.clientWidth||320);
+    cols=Math.round(Math.min(150,Math.max(46,W/9)));
+
+    /* реальные габариты надписи (по краске, не по em-боксу) */
+    const FS=200,TRACK=FS*0.02,FONT='800 '+FS+'px "Helvetica Neue",Helvetica,Arial,sans-serif';
+    const o=document.createElement("canvas"),oc=o.getContext("2d");
+    oc.font=FONT;oc.textBaseline="alphabetic";
+    let tw=0;for(const ch of TEXT)tw+=oc.measureText(ch).width+TRACK;
+    tw-=TRACK;
+    const m=oc.measureText(TEXT);
+    const asc=(m.actualBoundingBoxAscent||FS*0.715);
+    const desc=(m.actualBoundingBoxDescent||0);
+    const capH=Math.max(1,asc+desc);
+    rows=Math.max(5,Math.round(cols*(capH/tw)*CHAR_AR));
+
+    o.width=cols;o.height=rows;
+    const oc2=o.getContext("2d");
+    oc2.fillStyle="#000";oc2.fillRect(0,0,cols,rows);
+    oc2.font=FONT;oc2.textBaseline="alphabetic";oc2.fillStyle="#fff";
+    oc2.setTransform(cols/tw,0,0,rows/capH,0,0);
+    let x=0;
+    for(const ch of TEXT){oc2.fillText(ch,x,asc);x+=oc2.measureText(ch).width+TRACK;}
+    oc2.setTransform(1,0,0,1,0,0);
+
+    const d=oc2.getImageData(0,0,cols,rows).data;
+    base=new Array(rows);
+    for(let r=0;r<rows;r++){
+      const line=new Array(cols);
+      for(let c=0;c<cols;c++){
+        const i=(r*cols+c)*4;
+        const v=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)/255;
+        line[c]=RAMP[Math.min(RAMP.length-1,Math.round(v*(RAMP.length-1)))];
+      }
+      base[r]=line;
+    }
+
+    cw=W/cols;chh=cw/CHAR_AR;
+    dpr=Math.min(2,window.devicePixelRatio||1);
+    const H=chh*rows;
+    cv.style.height=Math.round(H)+"px";
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.font=chh.toFixed(2)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace';
+  }
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  function scheduleBurst(t){
+    nextBurst=t+rnd(1600,4200);
+  }
+  function spawnBurst(t){
+    const n=1+Math.floor(Math.random()*4);
+    for(let i=0;i<n;i++){
+      const h=1+Math.floor(Math.random()*Math.max(1,rows*0.28));
+      bursts.push({
+        y0:Math.floor(Math.random()*Math.max(1,rows-h)),h:h,
+        dx:Math.round(rnd(-cols*0.08,cols*0.08)),
+        noise:Math.random()*0.5,
+        end:t+rnd(70,320)
+      });
+    }
+    scheduleBurst(t);
+  }
+
+  let clean=false;
+  const SHIFT=[{c:"rgba(233,184,114,.6)",o:-0.6},{c:"rgba(120,180,255,.45)",o:0.6},{c:"#f4f3f1",o:0}];
+
+  function rowBurst(r){
+    for(let i=0;i<bursts.length;i++){const b=bursts[i];if(r>=b.y0&&r<b.y0+b.h)return b;}
+    return null;
+  }
+  function drawRow(r,b,color,off){
+    const line=base[r],y=(r+0.5)*chh;
+    ctx.fillStyle=color;
+    for(let c=0;c<cols;c++){
+      let ch=line[b?(c-b.dx+cols)%cols:c];
+      if(b&&Math.random()<b.noise*0.35)ch=NOISE[(Math.random()*NOISE.length)|0];
+      if(ch===" ")continue;
+      ctx.fillText(ch,(c+0.5)*cw+off,y);
+    }
+  }
+  function draw(t){
+    bursts=bursts.filter(b=>b.end>t);
+    if(!bursts.length&&clean)return;
+    ctx.clearRect(0,0,cv.width/dpr,cv.height/dpr);
+    for(let r=0;r<rows;r++){
+      const b=rowBurst(r);
+      if(!b){drawRow(r,null,"#f4f3f1",0);continue;}
+      for(const L of SHIFT)drawRow(r,b,L.c,L.o*cw);
+    }
+    clean=!bursts.length;
+  }
+
+  function loop(t){
+    if(!reduce){
+      if(!nextBurst)scheduleBurst(t);
+      if(t>=nextBurst)spawnBurst(t);
+    }
+    draw(t);
+    raf=requestAnimationFrame(loop);
+  }
+
+  function start(){
+    buildBase();clean=false;
+    if(reduce){draw(0);return;}
+    cancelAnimationFrame(raf);nextBurst=0;bursts=[];
+    raf=requestAnimationFrame(loop);
+  }
+
+  let rt=null;
+  window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(start,180);});
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden){cancelAnimationFrame(raf);raf=0;}
+    else if(!raf&&!reduce){raf=requestAnimationFrame(loop);}
+  });
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(start);else start();
+  start();
 })();
 </script>
 </body>
