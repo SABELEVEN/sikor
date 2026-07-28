@@ -67,7 +67,17 @@
   .sec-head h2{font-size:clamp(22px,3.4vw,36px);font-weight:800;text-transform:uppercase;letter-spacing:.01em}
   .sec-head .lnk{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);border-bottom:1px solid var(--line-2);padding-bottom:2px}
   .sec-head .lnk:hover{color:#fff;border-color:#fff}
-  .rail{display:flex;gap:1px;overflow-x:auto;padding:0 var(--gut) 6px;scroll-snap-type:x mandatory;background:var(--line)}
+  .railwrap{position:relative}
+  .rnav{position:absolute;top:38%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;
+        border:1px solid var(--line);background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+        font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 10px rgba(0,0,0,.12);transition:opacity .2s,background .2s;color:#111;padding-bottom:3px}
+  .rnav:hover{background:#fff}
+  .rnav.prev{left:8px}
+  .rnav.next{right:8px}
+  .rnav[hidden]{display:none}
+  @media(max-width:640px){.rnav{width:34px;height:34px;font-size:20px}}
+  .rail{display:flex;gap:1px;overflow-x:auto;padding:0 var(--gut) 6px;scroll-snap-type:x mandatory;background:var(--line);scroll-behavior:smooth}
   .rail::-webkit-scrollbar{height:0}
   .rail .rcard{flex:0 0 clamp(220px,26vw,320px);scroll-snap-align:start;background:var(--bg);cursor:pointer;padding-bottom:18px}
   .rail .rcard:hover{background:var(--bg-2)}
@@ -231,7 +241,11 @@
       <h2>Скидки</h2>
       <button class="lnk" id="allLink">Весь каталог →</button>
     </div>
-    <div class="rail" id="rail"></div>
+    <div class="railwrap" id="railwrap">
+      <button class="rnav prev" id="railPrev" aria-label="Назад">‹</button>
+      <div class="rail" id="rail"></div>
+      <button class="rnav next" id="railNext" aria-label="Вперёд">›</button>
+    </div>
 
     <div id="catalog">
       <div class="cat-top">
@@ -323,7 +337,7 @@
      details  — {"Состав":"...","Уход":"..."} (можно {})
    Фото кладите в папку images/ рядом с этим файлом.
    ========================================================= */
-const CATEGORY_ORDER=["Верхняя одежда","Костюмы","Свитшоты и худи","Свитеры","Поло","Трикотаж","Рубашки","Футболки","Брюки","Обувь","Аксессуары"];
+const CATEGORY_ORDER=["Верхняя одежда","Костюмы","Свитшоты и худи","Свитеры","Поло","Трикотаж","Рубашки","Футболки","Брюки","Джинсы","Штаны","Шорты","Обувь","Аксессуары"];
 
 const PRODUCTS=[
   {id:1,name:"Свитшот-поло",category:"Свитшоты и худи",price:3690,tag:"Новинка",feat:true,tone:"#3a4034",
@@ -434,20 +448,26 @@ const PRODUCTS=[
    desc:"Джинсовая рубашка-куртка из плотного хлопка, устойчивого к износу и хорошо держащего форму. Оснащена металлической фурнитурой. Отличная посадка и актуальный крой легко сочетаются во многих образах.",
    details:{Состав:"Плотный хлопок (деним)",Фурнитура:"Металлическая",Производство:"Турция"}},
 
-  {id:23,name:"Костюм LOFT",category:"Костюмы",price:5690,tag:"Новинка",feat:true,tone:"#8f9175",
-   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Серый","Коричневый","Зелёный"],
-   images:["images/kostyum-loft-green-1.jpg","images/kostyum-loft-green-2.jpg","images/kostyum-loft-green-3.jpg","images/kostyum-loft-green-4.jpg","images/kostyum-loft-beige-1.jpg","images/kostyum-loft-beige-2.jpg","images/kostyum-loft-beige-3.jpg"],
+  {id:23,name:"Костюм LOFT зелёный",category:"Костюмы",price:5690,tag:"Новинка",feat:true,tone:"#8f9175",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-loft-green-1.jpg","images/kostyum-loft-green-2.jpg","images/kostyum-loft-green-3.jpg","images/kostyum-loft-green-4.jpg"],
+   desc:"Базовый летний костюм из хлопка. Комплект состоит из oversize-футболки с трендовым необработанным краем и шорт свободного кроя.",
+   details:{Состав:"Хлопок",Комплект:"Футболка oversize + шорты",Край:"Необработанный"}},
+
+  {id:104,name:"Костюм LOFT бежевый",category:"Костюмы",price:5690,tag:null,feat:false,tone:"#e3dcc2",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-loft-beige-1.jpg","images/kostyum-loft-beige-2.jpg","images/kostyum-loft-beige-3.jpg"],
    desc:"Базовый летний костюм из хлопка. Комплект состоит из oversize-футболки с трендовым необработанным краем и шорт свободного кроя.",
    details:{Состав:"Хлопок",Комплект:"Футболка oversize + шорты",Край:"Необработанный"}},
 
   {id:24,name:"Костюм SUMMER",category:"Костюмы",price:5290,tag:null,feat:false,tone:"#141414",
-   sizes:["S","M","L","XL","2XL"],colors:["Бежевый","Серый","Коричневый","Чёрный"],
+   sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/kostyum-summer-1.jpg","images/kostyum-summer-2.jpg","images/kostyum-summer-3.jpg"],
    desc:"Базовый летний костюм из 100% хлопка. Комплект состоит из oversize-футболки с необработанным краем по низу и шорт свободного кроя с карманами на замках.",
    details:{Состав:"100% хлопок",Комплект:"Футболка oversize + шорты",Карманы:"На замках"}},
 
   {id:25,name:"Костюм классический",category:"Костюмы",price:9990,tag:"Premium",feat:true,tone:"#121212",
-   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Бежевый"],
+   sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/kostyum-klassicheskiy-1.jpg","images/kostyum-klassicheskiy-2.jpg","images/kostyum-klassicheskiy-3.jpg","images/kostyum-klassicheskiy-4.jpg"],
    desc:"Классический костюм с пиджаком из premium турецкого льна. Комплект: пиджак классической, слегка свободной посадки и брюки с заужением к низу. Лёгкий материал отлично дышит — идеально для мероприятий в жаркое время года.",
    details:{Состав:"Лён premium",Комплект:"Пиджак + брюки",Производство:"Турция"}},
@@ -840,7 +860,283 @@ const PRODUCTS=[
    sizes:["S","M","L","XL","2XL"],colors:[],
    images:["images/sviter-poluzamok-navy-1.jpg","images/sviter-poluzamok-navy-2.jpg"],
    desc:"Уютный свитер на полузамке — идеальный выбор для прохладных дней. Мягкая смесовая пряжа с хлопком дышит, не вызывает раздражения и отлично держит форму. Плотная фактурная вязка, стильный крой и металлическая молния добавляют акцента.",
-   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Полузамок",Производство:"Турция"}}
+   details:{Состав:"Смесовая пряжа с хлопком",Застёжка:"Полузамок",Производство:"Турция"}},
+
+  {id:87,name:"Ветровка",category:"Верхняя одежда",price:4590,tag:null,feat:false,tone:"#121212",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/vetrovka-1.jpg","images/vetrovka-2.jpg","images/vetrovka-3.jpg"],
+   desc:"Стильная демисезонная ветровка с трендовым воротником-стойкой — идеальный выбор для современного образа. Прямой крой, удобные карманы и резинка по низу обеспечивают комфорт и аккуратный силуэт. Универсальный чёрный цвет легко сочетается с любой одеждой.",
+   details:{Воротник:"Стойка",Застёжка:"Молния",Сезон:"Демисезон",Производство:"Турция"}},
+
+  {id:88,name:"Дублёнка чёрная",category:"Верхняя одежда",price:3290,oldPrice:7990,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dublenka-black-1.jpg","images/dublenka-black-2.jpg","images/dublenka-black-3.jpg"],
+   desc:"Дублёнка с отложным воротником на пуговицах отлично смотрится в элегантных образах, а акцентные открытые швы с мехом идеально дополняют накладные карманы и добавляют акцентов в образ. Эко-кожа не пропускает влагу, а благодаря меху по всей внутренней поверхности изделия отлично удерживает тепло!",
+   details:{Материал:"Эко-кожа",Подкладка:"Мех по всей поверхности",Воротник:"Отложной",Застёжка:"Пуговицы",Производство:"Турция"}},
+
+  {id:89,name:"Куртка-рубашка графит",category:"Верхняя одежда",price:7990,tag:null,feat:false,tone:"#565a58",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kurtka-rubashka-grafit-1.jpg","images/kurtka-rubashka-grafit-2.jpg"],
+   desc:"Универсальная куртка-рубашка на весну выполнена из приятного матового материала. Модель имеет удлинение сзади для защиты от ветра, а прошитый наполнитель холлофайбер делает куртку идеальным вариантом для весенней погоды!",
+   details:{Утеплитель:"Холлофайбер",Застёжка:"Кнопки",Сезон:"Весна",Производство:"Турция"}},
+
+  {id:90,name:"Жилет стёганый",category:"Верхняя одежда",price:3490,tag:null,feat:false,tone:"#e8e2cf",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный","Белый","Синий"],
+   images:["images/zhilet-1.jpg","images/zhilet-2.jpg"],
+   desc:"Тёплый стёганый жилет с утеплителем — стильное и функциональное решение для прохладных дней. Выполнен из плотного качественного материала, который отлично держит форму и защищает от холода. Скрытая молния с металлическими клёпками подчёркивает внимание к деталям и придаёт модели современный вид. Универсальный крой легко сочетается с рубашками, свитерами и джинсами.",
+   details:{Крой:"Стёганый жилет",Застёжка:"Скрытая молния",Фурнитура:"Металлические клёпки"}},
+
+  {id:91,name:"Дублёнка чёрно-белая",category:"Верхняя одежда",price:3290,oldPrice:7990,tag:null,feat:false,tone:"#1b1a18",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dublenka-bw-1.jpg","images/dublenka-bw-2.jpg","images/dublenka-bw-3.jpg"],
+   desc:"Дублёнка с отложным воротником на пуговицах отлично смотрится в элегантных образах, а акцентные открытые швы с мехом идеально дополняют накладные карманы и добавляют акцентов в образ. Эко-кожа не пропускает влагу, а благодаря меху по всей внутренней поверхности изделия отлично удерживает тепло!",
+   details:{Материал:"Эко-кожа",Подкладка:"Мех по всей поверхности",Воротник:"Отложной",Застёжка:"Пуговицы",Производство:"Турция"}},
+
+  {id:92,name:"Пальто укороченное",category:"Верхняя одежда",price:9690,tag:null,feat:false,tone:"#d5d1c6",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/palto-ukoroch-1.jpg","images/palto-ukoroch-2.jpg"],
+   desc:"Укороченное пальто — идеальный выбор для мужчины, который ценит стиль и комфорт. Модель на полном замке с отложным воротником, выполненная из качественных тканей с мягкой текстурой и приятными тактильными ощущениями. Ткань содержит натуральную шерсть и вискозу, что обеспечивает оптимальное тепло и износостойкость.",
+   details:{Состав:"Натуральная шерсть, вискоза",Воротник:"Отложной",Застёжка:"Полный замок",Длина:"Укороченная"}},
+
+  {id:93,name:"Пуховик LONG",category:"Верхняя одежда",price:5590,oldPrice:8990,tag:null,feat:false,tone:"#101010",
+   sizes:["M","L"],colors:[],
+   images:["images/puhovik-long-1.jpg","images/puhovik-long-2.jpg"],
+   desc:"Удлинённый пуховик — универсальный вариант на зиму! Крайне удобен в носке: в меру объёмный капюшон защитит от ветра и влаги, два уровня функционирующих карманов — внутренние и накладные, манжеты на рукавах. Отлично впишется в любой гардероб, базовый вариант для множества образов.",
+   details:{Длина:"Удлинённая",Капюшон:"Есть",Карманы:"Внутренние и накладные",Сезон:"Зима",Производство:"Турция"}},
+
+  {id:94,name:"Ветровка полуклассическая",category:"Верхняя одежда",price:5990,tag:null,feat:false,tone:"#131313",
+   sizes:["S","M","L","XL","2XL"],colors:["Чёрный"],
+   images:["images/vetrovka-poluklass-1.jpg","images/vetrovka-poluklass-2.jpg"],
+   desc:"Стильная ветровка с отложным воротником отлично впишется в гардероб любого мужчины. Ветровка в стиле casual на полном замке подойдёт под любой образ и любое событие благодаря базовой посадке.",
+   details:{Воротник:"Отложной",Застёжка:"Полный замок",Стиль:"Casual"}},
+
+  {id:95,name:"Куртка-рубашка чёрная",category:"Верхняя одежда",price:7990,tag:null,feat:false,tone:"#141414",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kurtka-rubashka-black-1.jpg","images/kurtka-rubashka-black-2.jpg"],
+   desc:"Универсальная куртка-рубашка на весну выполнена из приятного матового материала. Модель имеет удлинение сзади для защиты от ветра, а прошитый наполнитель холлофайбер делает куртку идеальным вариантом для весенней погоды!",
+   details:{Утеплитель:"Холлофайбер",Застёжка:"Кнопки",Сезон:"Весна",Производство:"Турция"}},
+
+  {id:96,name:"Шорты Linen чёрные",category:"Шорты",price:3490,tag:null,feat:false,tone:"#131313",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-linen-black-1.jpg","images/shorty-linen-black-2.jpg"],
+   desc:"Шорты из 100% турецкого льна. Отличная базовая модель из очень лёгкого материала — свободно сидят по фигуре, не облегают. Классическая застёжка на пуговице и дополнительные шнурки для комфортной посадки в области пояса.",
+   details:{Состав:"100% лён",Посадка:"Свободная",Застёжка:"Пуговица + шнурки",Производство:"Турция"}},
+
+  {id:97,name:"Шорты NYLON чёрные",category:"Шорты",price:3490,tag:null,feat:false,tone:"#121212",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-nylon-black-1.jpg","images/shorty-nylon-black-2.jpg"],
+   desc:"Базовая модель шорт из очень лёгкого материала с бархатным эффектом — свободно сидят по фигуре, не облегают. Легко сочетаются во многих образах с футболками, рубашками и поло.",
+   details:{Материал:"Нейлон с бархатным эффектом",Посадка:"Свободная",Производство:"Турция"}},
+
+  {id:98,name:"Шорты льняные белые",category:"Шорты",price:3490,tag:null,feat:false,tone:"#f2efe8",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-len-white-1.jpg","images/shorty-len-white-2.jpg"],
+   desc:"Шорты из турецкого льна — отличная базовая модель из очень лёгкого материала, свободно сидят по фигуре, не облегают. Эластичная резинка и дополнительные шнурки для комфортной посадки в области пояса.",
+   details:{Состав:"Лён",Посадка:"Свободная",Пояс:"Резинка + шнурки",Производство:"Турция"}},
+
+  {id:99,name:"Шорты серые",category:"Шорты",price:1990,tag:null,feat:false,tone:"#5f574f",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-gray-1.jpg","images/shorty-gray-2.jpg"],
+   desc:"Базовые шорты свободной посадки. Отлично подходят под расслабленные летние образы, а также для занятий спортом.",
+   details:{Посадка:"Свободная",Пояс:"Резинка",Назначение:"Повседневные, спорт"}},
+
+  {id:100,name:"Шорты NYLON коричневые",category:"Шорты",price:3490,tag:null,feat:false,tone:"#7d6549",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-nylon-brown-1.jpg","images/shorty-nylon-brown-2.jpg"],
+   desc:"Базовая модель шорт из очень лёгкого материала с бархатным эффектом — свободно сидят по фигуре, не облегают. Легко сочетаются во многих образах с футболками, рубашками и поло.",
+   details:{Материал:"Нейлон с бархатным эффектом",Посадка:"Свободная",Производство:"Турция"}},
+
+  {id:101,name:"Шорты классика чёрные",category:"Шорты",price:3290,tag:null,feat:false,tone:"#121212",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-klassika-black-1.jpg","images/shorty-klassika-black-2.jpg"],
+   desc:"Шорты классической посадки для ваших стильных образов! Выполнены из очень лёгкого качественного материала, на поясе два защипа — при желании можно выгладить стрелки. Также есть петельки под ремень и изысканная пуговица.",
+   details:{Посадка:"Классическая",Пояс:"Два защипа, петли под ремень",Застёжка:"Пуговица"}},
+
+  {id:102,name:"Шорты классика бежевые",category:"Шорты",price:3290,tag:null,feat:false,tone:"#e3dccb",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-klassika-beige-1.jpg","images/shorty-klassika-beige-2.jpg"],
+   desc:"Шорты классической посадки для ваших стильных образов! Выполнены из очень лёгкого качественного материала, на поясе два защипа — при желании можно выгладить стрелки. Также есть петельки под ремень и изысканная пуговица.",
+   details:{Посадка:"Классическая",Пояс:"Два защипа, петли под ремень",Застёжка:"Пуговица"}},
+
+  {id:103,name:"Шорты льняные бежевые",category:"Шорты",price:3490,tag:null,feat:false,tone:"#e6d5b4",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shorty-len-beige-1.jpg","images/shorty-len-beige-2.jpg"],
+   desc:"Шорты из турецкого льна — отличная базовая модель из очень лёгкого материала, свободно сидят по фигуре, не облегают. Эластичная резинка и дополнительные шнурки для комфортной посадки в области пояса.",
+   details:{Состав:"Лён",Посадка:"Свободная",Пояс:"Резинка + шнурки",Производство:"Турция"}},
+
+  {id:105,name:"Костюм классический бежевый",category:"Костюмы",price:9990,tag:"Premium",feat:false,tone:"#e8e0cd",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-klassicheskiy-beige-1.jpg","images/kostyum-klassicheskiy-beige-2.jpg"],
+   desc:"Классический костюм с пиджаком из premium турецкого льна. Комплект: пиджак классической, слегка свободной посадки и брюки с заужением к низу. Лёгкий материал отлично дышит и пропускает воздух — идеально для мероприятий в жаркое время года.",
+   details:{Состав:"Лён premium",Комплект:"Пиджак + брюки",Производство:"Турция"}},
+
+  {id:106,name:"Костюм SUMMER",category:"Костюмы",price:5290,tag:null,feat:false,tone:"#6b5c46",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-summer-brown-1.jpg","images/kostyum-summer-brown-2.jpg"],
+   desc:"Базовый летний костюм из 100% хлопка. Комплект состоит из oversize-футболки с трендовым необработанным краем по низу изделия и шорт свободного кроя с карманами на замочках.",
+   details:{Состав:"100% хлопок",Комплект:"Футболка oversize + шорты",Карманы:"На замках"}},
+
+  {id:107,name:"Костюм TENCEL коричневый",category:"Костюмы",price:7480,tag:null,feat:false,tone:"#6f5643",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-tencel-brown-1.jpg","images/kostyum-tencel-brown-2.jpg"],
+   desc:"Базовый летний костюм из рубашки и шорт, выполнен из натурального материала Tencel — ткань приятна к телу и создаёт охлаждающий эффект, идеально для тёплой погоды. Комплект свободного кроя, за счёт чего отлично сочетается с другими элементами гардероба, а базовые цвета позволят легко составлять образы.",
+   details:{Состав:"Tencel",Комплект:"Рубашка + шорты",Крой:"Свободный"}},
+
+  {id:108,name:"Костюм casual чёрный",category:"Костюмы",price:5990,tag:null,feat:false,tone:"#1a1a1a",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-casual-black-1.jpg","images/kostyum-casual-black-2.jpg"],
+   desc:"Базовый летний костюм из хлопка с текстурной полоской. Костюм состоит из футболки и шорт базовой посадки — легко вписываются в гардероб и сочетаются в образах даже по раздельности.",
+   details:{Состав:"Хлопок",Фактура:"Текстурная полоска",Комплект:"Футболка + шорты",Посадка:"Базовая"}},
+
+  {id:109,name:"Костюм casual коричневый",category:"Костюмы",price:5990,tag:null,feat:false,tone:"#6d6152",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-casual-brown-1.jpg","images/kostyum-casual-brown-2.jpg"],
+   desc:"Базовый летний костюм из хлопка с текстурной полоской. Костюм состоит из футболки и шорт базовой посадки — легко вписываются в гардероб и сочетаются в образах даже по раздельности.",
+   details:{Состав:"Хлопок",Фактура:"Текстурная полоска",Комплект:"Футболка + шорты",Посадка:"Базовая"}},
+
+  {id:110,name:"Костюм двубортный серый",category:"Костюмы",price:13990,tag:null,feat:false,tone:"#cfcdc6",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-dvubortnyy-gray-1.jpg","images/kostyum-dvubortnyy-gray-2.jpg"],
+   desc:"Костюм из двубортного пиджака и брюк свободного кроя. Отлично подойдёт для мероприятий: благодаря свободному крою комплект удобно сидит по телу и не сковывает движения, а элементы костюма легко сочетать по отдельности.",
+   details:{Пиджак:"Двубортный",Крой:"Свободный",Комплект:"Пиджак + брюки"}},
+
+  {id:111,name:"Костюм двубортный чёрный",category:"Костюмы",price:13990,tag:null,feat:false,tone:"#111111",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-dvubortnyy-black-1.jpg","images/kostyum-dvubortnyy-black-2.jpg"],
+   desc:"Костюм из двубортного пиджака и брюк свободного кроя. Отлично подойдёт для мероприятий: благодаря свободному крою комплект удобно сидит по телу и не сковывает движения, а элементы костюма легко сочетать по отдельности.",
+   details:{Пиджак:"Двубортный",Крой:"Свободный",Комплект:"Пиджак + брюки"}},
+
+  {id:112,name:"Костюм LOFT серый",category:"Костюмы",price:5690,tag:null,feat:false,tone:"#8b8b86",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/kostyum-loft-gray-1.jpg","images/kostyum-loft-gray-2.jpg"],
+   desc:"Базовый летний костюм из хлопка. Комплект состоит из oversize-футболки с трендовым необработанным краем и шорт свободного кроя.",
+   details:{Состав:"Хлопок",Комплект:"Футболка oversize + шорты",Край:"Необработанный"}},
+
+  {id:113,name:"Футболка three-thread чёрная",category:"Футболки",price:3290,tag:null,feat:false,tone:"#121212",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-three-thread-black-1.jpg","images/futbolka-three-thread-black-2.jpg"],
+   desc:"Плотная футболка oversize-кроя с правильными пропорциями и длиной, благодаря чему не смотрится «мешком» на теле. Плотность ткани 400 г/м² — футболка хорошо держит форму и удобна в носке. Необработанные края и плотный ворот добавляют акцентные детали, а натуральный состав делает её крайне износостойкой.",
+   details:{Крой:"Oversize",Плотность:"400 г/м²",Край:"Необработанный"}},
+
+  {id:114,name:"Футболка three-thread бежевая",category:"Футболки",price:3290,tag:null,feat:false,tone:"#e5dcc6",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-three-thread-beige-1.jpg","images/futbolka-three-thread-beige-2.jpg"],
+   desc:"Плотная футболка oversize-кроя с правильными пропорциями и длиной, благодаря чему не смотрится «мешком» на теле. Плотность ткани 400 г/м² — футболка хорошо держит форму и удобна в носке. Необработанные края и плотный ворот добавляют акцентные детали, а натуральный состав делает её крайне износостойкой.",
+   details:{Крой:"Oversize",Плотность:"400 г/м²",Край:"Необработанный"}},
+
+  {id:115,name:"Футболка three-thread серая",category:"Футболки",price:3290,tag:null,feat:false,tone:"#cfcdc7",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-three-thread-gray-1.jpg","images/futbolka-three-thread-gray-2.jpg"],
+   desc:"Плотная футболка oversize-кроя с правильными пропорциями и длиной, благодаря чему не смотрится «мешком» на теле. Плотность ткани 400 г/м² — футболка хорошо держит форму и удобна в носке. Необработанные края и плотный ворот добавляют акцентные детали, а натуральный состав делает её крайне износостойкой.",
+   details:{Крой:"Oversize",Плотность:"400 г/м²",Край:"Необработанный"}},
+
+  {id:116,name:"Футболка трикотажная коричневая",category:"Футболки",price:2890,tag:null,feat:false,tone:"#6d5344",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-trikotazh-brown-1.jpg","images/futbolka-trikotazh-brown-2.jpg"],
+   desc:"Базовая классическая футболка из мягкого и эластичного материала станет основой ваших стильных образов — отлично смотрится и как самостоятельный элемент гардероба, и в качестве нижнего слоя. Хорошо пропускает воздух, эластична и не сковывает движения, поэтому подойдёт и для мероприятий, и для повседневной носки.",
+   details:{Материал:"Мягкий эластичный трикотаж",Крой:"Классический",Производство:"Турция"}},
+
+  {id:117,name:"Футболка viscon серая",category:"Футболки",price:2690,tag:null,feat:false,tone:"#3b3a37",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-viscon-gray-1.jpg","images/futbolka-viscon-gray-2.jpg"],
+   desc:"Футболка классического кроя с детализированной текстурой плетения и составом с вискозой. Базовая посадка и пастельные оттенки позволяют легко сочетать её во многих образах.",
+   details:{Состав:"С вискозой",Фактура:"Текстурное плетение",Крой:"Классический"}},
+
+  {id:118,name:"Футболка viscon бежевая",category:"Футболки",price:2690,tag:null,feat:false,tone:"#e8e0c8",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-viscon-beige-1.jpg","images/futbolka-viscon-beige-2.jpg"],
+   desc:"Футболка классического кроя с детализированной текстурой плетения и составом с вискозой. Базовая посадка и пастельные оттенки позволяют легко сочетать её во многих образах.",
+   details:{Состав:"С вискозой",Фактура:"Текстурное плетение",Крой:"Классический"}},
+
+  {id:119,name:"Футболка оверсайз серая",category:"Футболки",price:2290,tag:null,feat:false,tone:"#4a4c4e",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-oversize-gray-1.jpg"],
+   desc:"Серая футболка oversize-кроя. Достаточно плотная и хорошо держит форму, выполнена из хлопка.",
+   details:{Состав:"Хлопок",Крой:"Oversize"}},
+
+  {id:120,name:"Футболка оверсайз чёрная",category:"Футболки",price:2290,tag:null,feat:false,tone:"#101010",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-oversize-black-1.jpg"],
+   desc:"Чёрная футболка oversize-кроя. Достаточно плотная и хорошо держит форму, выполнена из хлопка.",
+   details:{Состав:"Хлопок",Крой:"Oversize"}},
+
+  {id:121,name:"Футболка оверсайз коричневая",category:"Футболки",price:2290,tag:null,feat:false,tone:"#5c4038",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-oversize-brown-1.jpg"],
+   desc:"Коричневая футболка oversize-кроя. Достаточно плотная и хорошо держит форму, выполнена из хлопка.",
+   details:{Состав:"Хлопок",Крой:"Oversize"}},
+
+  {id:122,name:"Футболка viscon коричневая",category:"Футболки",price:2690,tag:null,feat:false,tone:"#8a5a33",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-viscon-brown-1.jpg","images/futbolka-viscon-brown-2.jpg"],
+   desc:"Футболка классического кроя с детализированной текстурой плетения и составом с вискозой. Базовая посадка и пастельные оттенки позволяют легко сочетать её во многих образах.",
+   details:{Состав:"С вискозой",Фактура:"Текстурное плетение",Крой:"Классический"}},
+
+  {id:123,name:"Футболка оверсайз бежевая",category:"Футболки",price:2290,tag:null,feat:false,tone:"#f0ead0",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/futbolka-oversize-beige-1.jpg"],
+   desc:"Бежевая футболка oversize-кроя. Достаточно плотная и хорошо держит форму, выполнена из хлопка.",
+   details:{Состав:"Хлопок",Крой:"Oversize"}},
+
+  {id:124,name:"Джинсы BANAN тёмно-серые",category:"Джинсы",price:4190,tag:null,feat:false,tone:"#3a3b3d",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-banan-gray-1.jpg","images/dzhinsy-banan-gray-2.jpg"],
+   desc:"Джинсы-бананы выполнены из 100% хлопка. Дышащий и плотный материал, качественные швы, идеальная посадка.",
+   details:{Состав:"100% хлопок",Крой:"Банан",Производство:"Турция"}},
+
+  {id:125,name:"Джинсы BANAN голубые",category:"Джинсы",price:4190,tag:null,feat:false,tone:"#a8c4dd",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-banan-blue-1.jpg","images/dzhinsy-banan-blue-2.jpg"],
+   desc:"Джинсы-бананы выполнены из хлопка. Дышащий и плотный материал, качественные швы, идеальная посадка.",
+   details:{Состав:"Хлопок",Крой:"Банан",Производство:"Турция"}},
+
+  {id:126,name:"Джинсы BANAN светло-серые",category:"Джинсы",price:4190,tag:null,feat:false,tone:"#b9b7b4",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-banan-lightgray-1.jpg","images/dzhinsy-banan-lightgray-2.jpg"],
+   desc:"Джинсы-бананы выполнены из хлопка. Дышащий и плотный материал, качественные швы, идеальная посадка.",
+   details:{Состав:"Хлопок",Крой:"Банан",Производство:"Турция"}},
+
+  {id:127,name:"Джинсы BALON серые",category:"Джинсы",price:4390,tag:"Новинка",feat:false,tone:"#5c5b58",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-balon-gray-1.jpg","images/dzhinsy-balon-gray-2.jpg"],
+   desc:"Новая модель джинсов BALON! Выполнены из плотного хлопкового денима, без лайкры и эластана. Модель с защипами, лёгким расширением в бёдрах и равномерным заужением к низу изделия.",
+   details:{Состав:"Хлопковый деним",Крой:"Balon, с защипами",Производство:"Турция"}},
+
+  {id:128,name:"Джинсы BALON голубые",category:"Джинсы",price:4390,tag:"Новинка",feat:false,tone:"#5a7ea4",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-balon-blue-1.jpg","images/dzhinsy-balon-blue-2.jpg"],
+   desc:"Новая модель джинсов BALON! Выполнены из плотного хлопкового денима, без лайкры и эластана. Модель с защипами, лёгким расширением в бёдрах и равномерным заужением к низу изделия.",
+   details:{Состав:"Хлопковый деним",Крой:"Balon, с защипами",Производство:"Турция"}},
+
+  {id:129,name:"Джинсы BALON чёрные",category:"Джинсы",price:4390,tag:"Новинка",feat:false,tone:"#1e1e1e",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-balon-black-1.jpg","images/dzhinsy-balon-black-2.jpg"],
+   desc:"Новая модель джинсов BALON! Выполнены из плотного хлопкового денима, без лайкры и эластана. Модель с защипами, лёгким расширением в бёдрах и равномерным заужением к низу изделия.",
+   details:{Состав:"Хлопковый деним",Крой:"Balon, с защипами",Производство:"Турция"}},
+
+  {id:130,name:"Джинсы REGULAR FIT чёрные",category:"Джинсы",price:4390,tag:null,feat:false,tone:"#151515",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-regular-black-1.jpg","images/dzhinsy-regular-black-2.jpg"],
+   desc:"Базовые неширокие джинсы модели REGULAR FIT. Прямой крой, слегка заужены к низу, отличная длина — подойдут и для высоких. Выполнены из плотной хлопковой джинсы, слегка тянутся для комфорта в движении.",
+   details:{Состав:"Плотный хлопковый деним",Крой:"Regular fit, прямой",Производство:"Турция"}},
+
+  {id:131,name:"Джинсы REGULAR FIT синие",category:"Джинсы",price:4390,tag:null,feat:false,tone:"#4a6d92",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/dzhinsy-regular-blue-1.jpg","images/dzhinsy-regular-blue-2.jpg"],
+   desc:"Базовые неширокие джинсы модели REGULAR FIT. Прямой крой, слегка заужены к низу, отличная длина — подойдут и для высоких. Выполнены из плотной хлопковой джинсы, слегка тянутся для комфорта в движении.",
+   details:{Состав:"Плотный хлопковый деним",Крой:"Regular fit, прямой",Производство:"Турция"}},
+
+  {id:132,name:"Спортивные штаны молочные",category:"Штаны",price:3690,tag:null,feat:false,tone:"#e2dccb",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shtany-sport-milk-1.jpg","images/shtany-sport-milk-2.jpg"],
+   desc:"Спортивные штаны без утепления, отличной слегка oversize посадки. Отлично держат форму и красиво сидят за счёт плотного хлопкового материала — ткань не растягивается и не скатывается. Можно взять отдельно или собрать костюм с худи либо зипкой.",
+   details:{Состав:"Плотный хлопок",Посадка:"Слегка oversize",Утеплитель:"Без утепления"}},
+
+  {id:133,name:"Спортивные штаны коричневые",category:"Штаны",price:3690,tag:null,feat:false,tone:"#4a3324",
+   sizes:["S","M","L","XL","2XL"],colors:[],
+   images:["images/shtany-sport-brown-1.jpg","images/shtany-sport-brown-2.jpg"],
+   desc:"Спортивные штаны без утепления, отличной слегка oversize посадки. Отлично держат форму и красиво сидят за счёт плотного хлопкового материала — ткань не растягивается и не скатывается. Можно взять отдельно или собрать костюм с худи либо зипкой.",
+   details:{Состав:"Плотный хлопок",Посадка:"Слегка oversize",Утеплитель:"Без утепления"}}
 ];
 
 let activeCat="Все";
@@ -920,8 +1216,25 @@ function renderRail(){
     rail.appendChild(c);
   });
   document.querySelector(".sec-head").style.display=sale.length?"":"none";
-  rail.style.display=sale.length?"":"none";
+  document.getElementById("railwrap").style.display=sale.length?"":"none";
+  updateRailNav();
 }
+
+/* ---- rail arrows ---- */
+const railPrev=document.getElementById("railPrev"),railNext=document.getElementById("railNext");
+function railStep(){
+  const card=rail.querySelector(".rcard");
+  return card?(card.getBoundingClientRect().width+1)*Math.max(1,Math.floor(rail.clientWidth/(card.getBoundingClientRect().width+1))-1):rail.clientWidth*.8;
+}
+function updateRailNav(){
+  const max=rail.scrollWidth-rail.clientWidth-2;
+  railPrev.hidden=rail.scrollLeft<=2;
+  railNext.hidden=rail.scrollLeft>=max||max<=0;
+}
+railPrev.onclick=()=>{rail.scrollBy({left:-railStep(),behavior:"smooth"});};
+railNext.onclick=()=>{rail.scrollBy({left:railStep(),behavior:"smooth"});};
+rail.addEventListener("scroll",updateRailNav,{passive:true});
+window.addEventListener("resize",updateRailNav);
 
 const grid=document.getElementById("grid"),rc=document.getElementById("rc");
 function filtered(){
